@@ -2,11 +2,14 @@
 
     <PropertyGroup>
         <TargetFramework>net5.0</TargetFramework>
-        <RootNamespace>TemplateApp.Infrastructure</RootNamespace>
     </PropertyGroup>
-
+    
     <ItemGroup>
-      <ProjectReference Include="..\PaymentGateway.Application\PaymentGateway.Application.csproj" />
+      <PackageReference Include="Pomelo.EntityFrameworkCore.MySql" Version="5.0.0" />
+      <PackageReference Include="Pomelo.EntityFrameworkCore.MySql.Design" Version="1.1.2" />
     </ItemGroup>
 
+    <ItemGroup>
+        <ProjectReference Include="..\PaymentGateway.Application\PaymentGateway.Application.csproj" />
+    </ItemGroup>
 </Project>
