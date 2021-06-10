@@ -1,7 +1,7 @@
 using System;
 using PaymentGateway.Application.Abstractions;
 
-namespace TemplateApp.Infrastructure
+namespace PaymentGateway.Infrastructure
 {
     public class DateTimeProvider : IDateTimeProvider
     {
