@@ -11,7 +11,5 @@ namespace PaymentGateway.Infrastructure.Persistence
             
         }
         public DbSet<Card> Cards { get; set; }
-
-        public DbSet<Account> Accounts { get; set; }
     }
 }

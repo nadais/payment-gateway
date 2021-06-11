@@ -9,8 +9,7 @@ namespace PaymentGateway.Application.Abstractions
     public interface IAppDbContext
     {
         DbSet<Card> Cards { get; set; }
-        DbSet<Account> Accounts { get; set; }
         DatabaseFacade Database { get; }
-        Task<int> SaveChangesAsync(CancellationToken cancellationToken);
+        Task<int> SaveChangesAsync(CancellationToken cancellationToken = default);
     }
 }

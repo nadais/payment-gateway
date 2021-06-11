@@ -1,5 +1,3 @@
-using System;
-
 namespace PaymentGateway.Domain.Entities
 {
     public class Card : BaseEntity
@@ -13,7 +11,5 @@ namespace PaymentGateway.Domain.Entities
         public int ExpirationMonth { get; set; }
 
         public int ExpirationYear { get; set; }
-
-        public Account Account { get; set; }
     }
 }

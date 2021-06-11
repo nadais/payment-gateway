@@ -9,6 +9,7 @@ namespace PaymentGateway.Application
         public static IServiceCollection AddApplicationServices(this IServiceCollection services)
         {
             services.AddMediatR(typeof(DependencyInjection).Assembly);
+            services.AddAutoMapper(typeof(DependencyInjection).Assembly);
             services.AddTransient(typeof(IPipelineBehavior<,>), typeof(RequestValidationBehavior<,>));
             return services;
         }

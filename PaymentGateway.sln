@@ -19,6 +19,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PaymentGateway.Models", "sr
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PaymentGateway.Application.Tests", "tests\PaymentGateway.Application.Tests\PaymentGateway.Application.Tests.csproj", "{CEC1B7E1-54AB-4CD9-B879-C7EAD3C0CE31}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PaymentGateway.Api.IntegrationTests", "tests\PaymentGateway.Api.IntegrationTests\PaymentGateway.Api.IntegrationTests.csproj", "{47C9D6E8-60CB-4811-9D92-6AF4E9C61945}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -38,6 +40,7 @@ Global
 		{333F285A-14B6-4EBE-BBA1-7FA2941D81F3} = {91356CEF-6EC4-4B9F-B278-932CBDAF45D4}
 		{4C2C7A49-810F-44F1-B0D2-4EE46FDAC75C} = {91356CEF-6EC4-4B9F-B278-932CBDAF45D4}
 		{CEC1B7E1-54AB-4CD9-B879-C7EAD3C0CE31} = {ED10417B-FA9F-4A56-87F0-0D91A20A2E55}
+		{47C9D6E8-60CB-4811-9D92-6AF4E9C61945} = {ED10417B-FA9F-4A56-87F0-0D91A20A2E55}
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
 		{F95B1C67-BEBA-4812-BEDA-1DF0316F1605}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
@@ -112,5 +115,17 @@ Global
 		{CEC1B7E1-54AB-4CD9-B879-C7EAD3C0CE31}.Release|x64.Build.0 = Release|Any CPU
 		{CEC1B7E1-54AB-4CD9-B879-C7EAD3C0CE31}.Release|x86.ActiveCfg = Release|Any CPU
 		{CEC1B7E1-54AB-4CD9-B879-C7EAD3C0CE31}.Release|x86.Build.0 = Release|Any CPU
+		{47C9D6E8-60CB-4811-9D92-6AF4E9C61945}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{47C9D6E8-60CB-4811-9D92-6AF4E9C61945}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{47C9D6E8-60CB-4811-9D92-6AF4E9C61945}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{47C9D6E8-60CB-4811-9D92-6AF4E9C61945}.Debug|x64.Build.0 = Debug|Any CPU
+		{47C9D6E8-60CB-4811-9D92-6AF4E9C61945}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{47C9D6E8-60CB-4811-9D92-6AF4E9C61945}.Debug|x86.Build.0 = Debug|Any CPU
+		{47C9D6E8-60CB-4811-9D92-6AF4E9C61945}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{47C9D6E8-60CB-4811-9D92-6AF4E9C61945}.Release|Any CPU.Build.0 = Release|Any CPU
+		{47C9D6E8-60CB-4811-9D92-6AF4E9C61945}.Release|x64.ActiveCfg = Release|Any CPU
+		{47C9D6E8-60CB-4811-9D92-6AF4E9C61945}.Release|x64.Build.0 = Release|Any CPU
+		{47C9D6E8-60CB-4811-9D92-6AF4E9C61945}.Release|x86.ActiveCfg = Release|Any CPU
+		{47C9D6E8-60CB-4811-9D92-6AF4E9C61945}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal
