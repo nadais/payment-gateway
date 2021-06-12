@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using System.Linq;
+using System.Net;
 using System.Threading;
 using System.Threading.Tasks;
 using MediatR;
@@ -24,14 +25,16 @@ namespace PaymentGateway.Application.Cards.Queries
             if (IsCardExpired(request))
             {
                 AddError(errors, nameof(ValidateCardQuery.Card), "The provided card is expired");
-            };
+            }
             if (!LuhnAlgorithmCheck(request.Card.CardNumber))
             {
                 AddError(errors, nameof(CardDto.CardNumber), "The provided card number is not valid");
             }
+
             if (errors.Count > 0)
             {
-                throw new CardInvalidException(errors);
+                throw new ApiException(HttpStatusCode.BadRequest, "The provided card details are not valid",
+                    "INVALID_CARD_DETAILS", null, errors);
             }
             return Task.FromResult(new CardValidationResponse
             {

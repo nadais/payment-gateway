@@ -17,8 +17,4 @@
     <ItemGroup>
         <ProjectReference Include="..\PaymentGateway.Domain\PaymentGateway.Domain.csproj" />
     </ItemGroup>
-
-    <ItemGroup>
-      <Folder Include="Common" />
-    </ItemGroup>
 </Project>

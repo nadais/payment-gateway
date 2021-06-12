@@ -39,7 +39,8 @@ namespace PaymentGateway.Api.Filters
                     errorResponse = errorResponse with
                     {
                         ErrorCode = apiException.ErrorCode,
-                        Message = apiException.ErrorMessage
+                        Message = apiException.ErrorMessage,
+                        ErrorInformation = apiException.ErrorInformation
                     };
                     return new ContentResult
                     {
