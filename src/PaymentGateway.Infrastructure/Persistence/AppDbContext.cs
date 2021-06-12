@@ -1,5 +1,5 @@
 using Microsoft.EntityFrameworkCore;
-using PaymentGateway.Application.Abstractions;
+using PaymentGateway.Application.Common.Abstractions;
 using PaymentGateway.Domain.Entities;
 
 namespace PaymentGateway.Infrastructure.Persistence

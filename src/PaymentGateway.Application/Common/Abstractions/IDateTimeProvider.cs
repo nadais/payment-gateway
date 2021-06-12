@@ -1,6 +1,6 @@
 using System;
 
-namespace PaymentGateway.Application.Abstractions
+namespace PaymentGateway.Application.Common.Abstractions
 {
     public interface IDateTimeProvider
     {

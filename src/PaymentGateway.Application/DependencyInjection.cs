@@ -1,6 +1,6 @@
 using MediatR;
 using Microsoft.Extensions.DependencyInjection;
-using PaymentGateway.Application.Behaviours;
+using PaymentGateway.Application.Common.Behaviours;
 
 namespace PaymentGateway.Application
 {

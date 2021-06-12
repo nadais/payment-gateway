@@ -3,11 +3,11 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using MediatR;
-using PaymentGateway.Application.Abstractions;
+using PaymentGateway.Application.Common.Abstractions;
 using PaymentGateway.Domain.Exceptions;
-using PaymentGateway.Models.Dtos.Cards;
+using PaymentGateway.Models.Cards;
 
-namespace PaymentGateway.Application.Queries.Cards
+namespace PaymentGateway.Application.Cards.Queries
 {
     public record ValidateCardQuery(CardDto Card) : IRequest<CardValidationResponse>;
 

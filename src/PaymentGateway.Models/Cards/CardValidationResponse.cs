@@ -1,4 +1,4 @@
-namespace PaymentGateway.Models.Dtos.Cards
+namespace PaymentGateway.Models.Cards
 {
     public record CardValidationResponse
     {
