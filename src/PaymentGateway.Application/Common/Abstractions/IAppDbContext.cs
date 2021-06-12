@@ -4,7 +4,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using PaymentGateway.Domain.Entities;
 
-namespace PaymentGateway.Application.Abstractions
+namespace PaymentGateway.Application.Common.Abstractions
 {
     public interface IAppDbContext
     {

@@ -1,12 +1,12 @@
 using System;
 
-namespace PaymentGateway.Models.Dtos.Cards
+namespace PaymentGateway.Models.Cards
 {
     public record CardDto
     {
         public Guid Id { get; init; }
 
-        public int Cvv { get; init; }
+        public string Cvv { get; init; }
 
         public string CardNumber { get; init; }
 

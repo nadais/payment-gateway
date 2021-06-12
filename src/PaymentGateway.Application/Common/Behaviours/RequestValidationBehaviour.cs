@@ -7,7 +7,7 @@ using FluentValidation;
 using MediatR;
 using PaymentGateway.Domain.Exceptions;
 
-namespace PaymentGateway.Application.Behaviours
+namespace PaymentGateway.Application.Common.Behaviours
 {
     public class RequestValidationBehavior<TRequest, TResponse> : IPipelineBehavior<TRequest, TResponse>
         where TRequest : IRequest<TResponse>

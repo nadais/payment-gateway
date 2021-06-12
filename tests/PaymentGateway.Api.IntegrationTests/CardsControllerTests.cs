@@ -5,8 +5,8 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using NSubstitute;
 using PaymentGateway.Api.IntegrationTests.Extensions;
-using PaymentGateway.Application.Abstractions;
-using PaymentGateway.Models.Dtos.Cards;
+using PaymentGateway.Application.Common.Abstractions;
+using PaymentGateway.Models.Cards;
 using Xunit;
 
 namespace PaymentGateway.Api.IntegrationTests
