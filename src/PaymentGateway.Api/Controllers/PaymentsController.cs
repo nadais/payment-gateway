@@ -4,9 +4,8 @@ using System.Threading.Tasks;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using PaymentGateway.Application.Cards.Queries;
+using PaymentGateway.Application.Payments.Commands;
 using PaymentGateway.Application.Payments.Queries;
-using PaymentGateway.Models.Cards;
 using PaymentGateway.Models.Payments;
 
 namespace PaymentGateway.Api.Controllers
@@ -23,9 +22,9 @@ namespace PaymentGateway.Api.Controllers
         }
         
         [HttpPost]
-        public async Task<CardValidationResponse> ValidateCard([FromBody] CardDto request, CancellationToken cancellationToken = default)
+        public async Task<PaymentDto> CreatePayment([FromBody] CreatePaymentRequest request, CancellationToken cancellationToken = default)
         {
-            return await _mediator.Send(new ValidateCardQuery(request), cancellationToken);
+            return await _mediator.Send(new CreatePaymentCommand(request), cancellationToken);
         }
         
         [HttpGet("{id:guid}")]
