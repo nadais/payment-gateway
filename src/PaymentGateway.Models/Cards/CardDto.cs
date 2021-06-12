@@ -20,6 +20,6 @@ namespace PaymentGateway.Models.Cards
 
         public DateTimeOffset CreatedAt { get; init; }
 
-        public DateTimeOffset ModifiedAt { get; set; }
+        public DateTimeOffset? ModifiedAt { get; set; }
     }
 }

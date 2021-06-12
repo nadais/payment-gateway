@@ -3,6 +3,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using PaymentGateway.Application.Common.Abstractions;
 using PaymentGateway.Infrastructure.Persistence;
+using PaymentGateway.Infrastructure.Services;
 
 namespace PaymentGateway.Infrastructure
 {
@@ -11,6 +12,7 @@ namespace PaymentGateway.Infrastructure
         public static IServiceCollection AddInfrastructureServices(this IServiceCollection services, IConfiguration configuration)
         {
             services.AddScoped<IDateTimeProvider, DateTimeProvider>();
+            services.AddScoped<IBankService, BankService>();
             AddDbContext(services, configuration);
             return services;
         }

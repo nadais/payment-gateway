@@ -1,3 +1,5 @@
+using System;
+using System.Threading;
 using System.Threading.Tasks;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
@@ -20,15 +22,21 @@ namespace PaymentGateway.Api.Controllers
         }
         
         [HttpPost("validation")]
-        public async Task<CardValidationResponse> ValidateCard([FromBody] CardDto request)
+        public async Task<CardValidationResponse> ValidateCard([FromBody] CardDto request, CancellationToken cancellationToken = default)
         {
-             return await _mediator.Send(new ValidateCardQuery(request));
+             return await _mediator.Send(new ValidateCardQuery(request), cancellationToken);
         }
         
         [HttpPost]
-        public async Task<CardDto> CreateCard([FromBody] CreateCardRequest request)
+        public async Task<CardDto> CreateCard([FromBody] CreateCardRequest request, CancellationToken cancellationToken = default)
         {
-            return await _mediator.Send(new CreateCardCommand(request));
+            return await _mediator.Send(new CreateCardCommand(request), cancellationToken);
+        }
+        
+        [HttpGet("{id:guid}")]
+        public async Task<CardDto> GetCardById([FromRoute] Guid id, CancellationToken cancellationToken = default)
+        {
+            return await _mediator.Send(new GetCardByIdQuery(id), cancellationToken);
         }
     }
 }

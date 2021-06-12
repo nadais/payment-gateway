@@ -6,5 +6,7 @@ namespace PaymentGateway.Models
         public string ErrorCode { get; init; }
 
         public string Message { get; init; }
+        
+        public object ErrorInformation { get; init; }
     }
 }

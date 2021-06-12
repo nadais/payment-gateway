@@ -33,7 +33,7 @@ namespace PaymentGateway.Application.Tests.Queries
             _systemUnderTest = CreateSystemUnderTests();
 
             // Assert.
-            var error = await Assert.ThrowsAsync<CardInvalidException>(async () =>
+            var error = await Assert.ThrowsAsync<ApiException>(async () =>
             {
                 // Act.
                 await _systemUnderTest.Handle(new ValidateCardQuery(new CardDto
@@ -60,7 +60,7 @@ namespace PaymentGateway.Application.Tests.Queries
             _systemUnderTest = CreateSystemUnderTests();
 
             // Assert.
-            var error = await Assert.ThrowsAsync<CardInvalidException>(async () =>
+            var error = await Assert.ThrowsAsync<ApiException>(async () =>
             {
                 // Act.
                 await _systemUnderTest.Handle(new ValidateCardQuery(new CardDto

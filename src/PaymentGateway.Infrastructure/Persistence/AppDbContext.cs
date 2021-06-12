@@ -11,5 +11,17 @@ namespace PaymentGateway.Infrastructure.Persistence
             
         }
         public DbSet<Card> Cards { get; set; }
+
+        public DbSet<Payment> Payments { get; set; }
+
+        protected override void OnModelCreating(ModelBuilder modelBuilder)
+        {
+            modelBuilder.Entity<Card>(entity =>
+            {
+                entity.HasIndex(x => new {x.CardNumber})
+                    .IsUnique();
+            });
+            base.OnModelCreating(modelBuilder);
+        }
     }
 }
