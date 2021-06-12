@@ -1,5 +1,5 @@
 using System;
-using PaymentGateway.Application.Abstractions;
+using PaymentGateway.Application.Common.Abstractions;
 
 namespace PaymentGateway.Infrastructure
 {

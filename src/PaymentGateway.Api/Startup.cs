@@ -4,13 +4,11 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using Microsoft.OpenApi.Models;
 using PaymentGateway.Api.Extensions.Authentication;
+using PaymentGateway.Api.Extensions.Swagger;
 using PaymentGateway.Api.Filters;
 using PaymentGateway.Application;
-using PaymentGateway.Application.Validators;
 using PaymentGateway.Infrastructure;
-using PaymentGateway.Infrastructure.Persistence;
 
 namespace PaymentGateway.Api
 {
@@ -30,8 +28,8 @@ namespace PaymentGateway.Api
                 {
                     options.Filters.Add<ExceptionFilter>();
                 })
-                .AddFluentValidation(options => options.RegisterValidatorsFromAssemblyContaining(typeof(GetWeatherForecastValidator)));
-            services.AddSwaggerGen(c => { c.SwaggerDoc("v1", new OpenApiInfo {Title = "PaymentGateway.Api", Version = "v1"}); });
+                .AddFluentValidation(options => options.RegisterValidatorsFromAssemblyContaining(typeof(Application.DependencyInjection)));
+            services.AddSwaggerApiDescription();
             services.AddCustomAuthentication(Configuration);
             services.AddApplicationServices()
                 .AddInfrastructureServices(Configuration);

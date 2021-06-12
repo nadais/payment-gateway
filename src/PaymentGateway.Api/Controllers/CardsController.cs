@@ -2,8 +2,9 @@ using System.Threading.Tasks;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using PaymentGateway.Application.Queries.Cards;
-using PaymentGateway.Models.Dtos.Cards;
+using PaymentGateway.Application.Cards.Commands;
+using PaymentGateway.Application.Cards.Queries;
+using PaymentGateway.Models.Cards;
 
 namespace PaymentGateway.Api.Controllers
 {
@@ -22,6 +23,12 @@ namespace PaymentGateway.Api.Controllers
         public async Task<CardValidationResponse> ValidateCard([FromBody] CardDto request)
         {
              return await _mediator.Send(new ValidateCardQuery(request));
+        }
+        
+        [HttpPost]
+        public async Task<CardDto> CreateCard([FromBody] CreateCardRequest request)
+        {
+            return await _mediator.Send(new CreateCardCommand(request));
         }
     }
 }

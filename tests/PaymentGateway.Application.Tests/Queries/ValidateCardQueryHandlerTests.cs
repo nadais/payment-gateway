@@ -3,10 +3,10 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using NSubstitute;
-using PaymentGateway.Application.Abstractions;
-using PaymentGateway.Application.Queries.Cards;
+using PaymentGateway.Application.Cards.Queries;
+using PaymentGateway.Application.Common.Abstractions;
 using PaymentGateway.Domain.Exceptions;
-using PaymentGateway.Models.Dtos.Cards;
+using PaymentGateway.Models.Cards;
 using Xunit;
 
 namespace PaymentGateway.Application.Tests.Queries

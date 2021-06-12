@@ -2,7 +2,7 @@ namespace PaymentGateway.Domain.Entities
 {
     public class Card : BaseEntity
     {
-        public int Cvv { get; set; }
+        public string Cvv { get; set; }
 
         public string CardNumber { get; set; }
 
