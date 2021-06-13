@@ -25,7 +25,7 @@ namespace PaymentGateway.Api.Extensions.Authentication
             var credentials = new SigningCredentials(securityKey, SecurityAlgorithms.HmacSha256);    
     
             var claims = new[] {
-                new Claim(ShopperIdPolicy.ShopperIdClaim, shopperId.ToString()),    
+                new Claim(ShopperAuthorizationConstants.ShopperIdClaim, shopperId.ToString()),    
             };    
     
             var token = new JwtSecurityToken(_config["Jwt:Issuer"],    

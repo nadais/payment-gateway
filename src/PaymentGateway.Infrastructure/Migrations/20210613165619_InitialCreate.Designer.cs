@@ -9,7 +9,7 @@ using PaymentGateway.Infrastructure.Persistence;
 namespace PaymentGateway.Infrastructure.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20210613142119_InitialCreate")]
+    [Migration("20210613165619_InitialCreate")]
     partial class InitialCreate
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -51,7 +51,7 @@ namespace PaymentGateway.Infrastructure.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("CardNumber")
+                    b.HasIndex("CardNumber", "ShopperId")
                         .IsUnique();
 
                     b.ToTable("Cards");

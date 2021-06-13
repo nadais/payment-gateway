@@ -1,12 +1,10 @@
 ﻿using System;
-using System.ComponentModel.DataAnnotations;
 using PaymentGateway.Models.Payments;
 
 namespace PaymentGateway.Domain.Entities
 {
     public class Payment
     {
-        [Key]
         public Guid Id { get; set; }
 
         public DateTimeOffset CreatedAt { get; set; }

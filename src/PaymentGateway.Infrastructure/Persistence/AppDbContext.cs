@@ -18,8 +18,13 @@ namespace PaymentGateway.Infrastructure.Persistence
         {
             modelBuilder.Entity<Card>(entity =>
             {
-                entity.HasIndex(x => new {x.CardNumber})
+                entity.HasIndex(x => new {x.CardNumber, x.ShopperId})
                     .IsUnique();
+                entity.HasKey(x => x.Id);
+            });
+            modelBuilder.Entity<Payment>(entity =>
+            {
+                entity.HasKey(x => x.Id);
             });
             base.OnModelCreating(modelBuilder);
         }
