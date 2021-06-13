@@ -1,11 +1,9 @@
 using System;
-using System.ComponentModel.DataAnnotations;
 
 namespace PaymentGateway.Domain.Entities
 {
     public class Card
     {
-        [Key]
         public Guid Id { get; set; }
 
         public Guid ShopperId { get; set; }

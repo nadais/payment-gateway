@@ -49,7 +49,7 @@ namespace PaymentGateway.Infrastructure.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("CardNumber")
+                    b.HasIndex("CardNumber", "ShopperId")
                         .IsUnique();
 
                     b.ToTable("Cards");

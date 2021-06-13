@@ -27,10 +27,10 @@ namespace PaymentGateway.Api.Extensions.Authentication
                 });
             services.AddAuthorization(options =>
             {
-                options.AddPolicy(ShopperIdPolicy.HasShopperIdPolicy, policy =>
-                    policy.Requirements.Add(new ShopperIdPolicy.IsShopperRequirement()));
+                options.AddPolicy(ShopperAuthorizationConstants.HasShopperIdPolicy, policy =>
+                    policy.Requirements.Add(new ShopperAuthorizationRequirement()));
             });
-            services.AddScoped<IAuthorizationHandler, ShopperIdPolicy.IsShopperRequirementHandler>();
+            services.AddScoped<IAuthorizationHandler, ShopperAuthorizationHandler>();
             return services;
         }
     }

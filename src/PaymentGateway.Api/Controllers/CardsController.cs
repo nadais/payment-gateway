@@ -13,7 +13,7 @@ namespace PaymentGateway.Api.Controllers
 {
     [ApiController]
     [Route("api/cards")]
-    [Authorize(Policy = ShopperIdPolicy.HasShopperIdPolicy)]
+    [Authorize(Policy = ShopperAuthorizationConstants.HasShopperIdPolicy)]
     public class CardsController : BaseController
     {
         private readonly IMediator _mediator;

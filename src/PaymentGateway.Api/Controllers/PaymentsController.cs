@@ -14,7 +14,7 @@ namespace PaymentGateway.Api.Controllers
 {
     [ApiController]
     [Route("api/payments")]
-    [Authorize(Policy = ShopperIdPolicy.HasShopperIdPolicy)]
+    [Authorize(Policy = ShopperAuthorizationConstants.HasShopperIdPolicy)]
     public class PaymentsController : BaseController
     {
         private readonly IMediator _mediator;

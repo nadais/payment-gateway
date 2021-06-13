@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 using Microsoft.AspNetCore.Mvc;
 using PaymentGateway.Api.Extensions.Authentication;
 
@@ -8,7 +9,8 @@ namespace PaymentGateway.Api.Controllers
     {
         protected Guid GetShopperId()
         {
-            return ShopperIdPolicy.GetShopperId(User);
+            var shopperIdClaim = User.Claims.Single(x => x.Type == ShopperAuthorizationConstants.ShopperIdClaim);
+            return Guid.Parse(shopperIdClaim.Value);
         }
     }
 }
