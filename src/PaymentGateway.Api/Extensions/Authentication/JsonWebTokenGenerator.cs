@@ -1,11 +1,7 @@
 ﻿using System;
 using System.IdentityModel.Tokens.Jwt;
-using System.Linq;
-using System.Net;
 using System.Security.Claims;
 using System.Text;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.Extensions.Configuration;
 using Microsoft.IdentityModel.Tokens;
 using PaymentGateway.Application.Common.Abstractions;
@@ -23,7 +19,7 @@ namespace PaymentGateway.Api.Extensions.Authentication
             _config = config;
         }
 
-        public string GenerateJSONWebToken(Guid shopperId)    
+        public string GenerateJsonWebToken(Guid shopperId)    
         {    
             var securityKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_config["Jwt:Key"]));    
             var credentials = new SigningCredentials(securityKey, SecurityAlgorithms.HmacSha256);    
