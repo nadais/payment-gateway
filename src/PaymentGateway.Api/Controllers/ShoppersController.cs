@@ -21,10 +21,10 @@ namespace PaymentGateway.Api.Controllers
         }
 
         [HttpGet("{id:guid}/login")]
-        public async Task<string> Login([FromRoute] Guid id)
+        public string Login([FromRoute] Guid id)
         {
             var token = new JsonWebTokenGenerator(_dateTimeProvider, _configuration);
-            return token.GenerateJSONWebToken(id);
+            return token.GenerateJsonWebToken(id);
         }
     }
 }

@@ -48,13 +48,14 @@ namespace PaymentGateway.Api.IntegrationTests
     {
         public static HttpClient CreateClientWithShopperId(this WebApplicationFactory<Startup> factory, Guid shopperId = default)
         {
+            shopperId = shopperId == Guid.Empty ? Guid.NewGuid() : shopperId;
             var testClient = factory.CreateClient();
-            var builder = new ConfigurationBuilder()
+            var config = new ConfigurationBuilder()
                 .AddJsonFile("appsettings.json", true, true)
                 .AddEnvironmentVariables()
                 .Build();
-            var tokenGenerator = new JsonWebTokenGenerator(new DateTimeProvider(), builder);
-            var token = tokenGenerator.GenerateJSONWebToken(shopperId);
+            var tokenGenerator = new JsonWebTokenGenerator(new DateTimeProvider(), config);
+            var token = tokenGenerator.GenerateJsonWebToken(shopperId);
             testClient.DefaultRequestHeaders.TryAddWithoutValidation("Authorization", $"Bearer {token}");
             return testClient;
         }

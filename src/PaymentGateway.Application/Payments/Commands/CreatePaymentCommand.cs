@@ -64,14 +64,14 @@ namespace PaymentGateway.Application.Payments.Commands
         {
             try
             {
-                var isPaymentSuccessful = await _bankService.ProcessCardPaymentAsync(new BankPaymentRequest
+                var bankPaymentResponse = await _bankService.ProcessCardPaymentAsync(new BankPaymentRequest
                 {
                     Currency = command.Request.Currency,
                     FromCard = targetCard,
                     Quantity = command.Request.Quantity,
                     ToAccountId = command.ShopperId
                 });
-                return isPaymentSuccessful;
+                return bankPaymentResponse;
             }
             catch (ApiException ex)
             {
@@ -112,6 +112,7 @@ namespace PaymentGateway.Application.Payments.Commands
             var payment = _mapper.Map<Payment>(request.Request);
             payment.CardNumber = card.CardNumber;
             payment.CreatedAt = _dateTimeProvider.GetCurrentTime();
+            payment.ShopperId = request.ShopperId;
             payment.CardId = card.Id;
             payment.Status = response.IsSuccessful ? PaymentStatus.Success : PaymentStatus.Failed;
             payment.ExternalId = response.Id;
