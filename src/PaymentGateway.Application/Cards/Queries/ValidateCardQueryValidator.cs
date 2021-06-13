@@ -8,7 +8,7 @@ namespace PaymentGateway.Application.Cards.Queries
         {
             RuleFor(x => x.Card)
                 .NotEmpty()
-                .SetValidator(new CardDtoValidator());
+                .SetValidator(new CardRequestValidator());
         }
     }
 }

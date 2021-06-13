@@ -11,10 +11,12 @@ namespace PaymentGateway.Application.Payments
         {
             CreateMap<Payment, PaymentDto>();
             CreateMap<CreatePaymentRequest, Payment>()
+                .ForMember(to => to.ShopperId, how => how.Ignore())
                 .ForMember(to => to.Id, how=> how.Ignore())
                 .ForMember(to => to.CreatedAt, how=> how.Ignore())
                 .ForMember(to => to.CardNumber, how => how.Ignore())
-                .ForMember(to => to.Status, how => how.Ignore());
+                .ForMember(to => to.Status, how => how.Ignore())
+                .ForMember(to => to.ExternalId, how => how.Ignore());
         }
     }
 }

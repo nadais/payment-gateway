@@ -8,6 +8,8 @@ namespace PaymentGateway.Domain.Entities
         [Key]
         public Guid Id { get; set; }
 
+        public Guid ShopperId { get; set; }
+
         public DateTimeOffset CreatedAt { get; set; }
 
         public DateTimeOffset? ModifiedAt { get; set; }

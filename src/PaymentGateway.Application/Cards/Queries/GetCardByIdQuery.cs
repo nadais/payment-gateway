@@ -11,7 +11,7 @@ using PaymentGateway.Models.Cards;
 namespace PaymentGateway.Application.Cards.Queries
 {
 
-    public record GetCardByIdQuery(Guid Id) : IRequest<CardDto>;
+    public record GetCardByIdQuery(Guid Id, Guid ShopperId) : IRequest<CardDto>;
     
     public class GetCardByIdQueryHandler : IRequestHandler<GetCardByIdQuery, CardDto>
     {
@@ -28,7 +28,7 @@ namespace PaymentGateway.Application.Cards.Queries
 
         public async Task<CardDto> Handle(GetCardByIdQuery request, CancellationToken cancellationToken)
         {
-            var card = await _appDbContext.Cards.AsNoTracking().SingleOrDefaultAsync(x => x.Id == request.Id, cancellationToken);
+            var card = await _appDbContext.Cards.AsNoTracking().SingleOrDefaultAsync(x => x.Id == request.Id && x.ShopperId == request.ShopperId, cancellationToken);
             if (card == null)
             {
                 throw new NotFoundException($"No card found with id {request.Id}");

@@ -30,7 +30,7 @@ namespace PaymentGateway.Api
                 })
                 .AddFluentValidation(options => options.RegisterValidatorsFromAssemblyContaining(typeof(Application.DependencyInjection)));
             services.AddSwaggerApiDescription();
-            services.AddCustomAuthentication(Configuration);
+            services.AddJwtAuthentication(Configuration);
             services.AddApplicationServices()
                 .AddInfrastructureServices(Configuration);
         }

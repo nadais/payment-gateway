@@ -11,12 +11,7 @@ namespace PaymentGateway.Application.Cards
             var sb = new StringBuilder();
             for (var i = 0; i < cardNumber.Length; i++)
             {
-                if (i < cardNumber.Length - 4)
-                {
-                    sb.Append('*');
-                }
-
-                sb.Append(cardNumber[i]);
+                sb.Append(i < cardNumber.Length - 4 ? '*' : cardNumber[i]);
             }
 
             return sb.ToString();

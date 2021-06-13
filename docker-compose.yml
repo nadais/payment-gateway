@@ -3,6 +3,10 @@ services:
   backend:
     container_name: payment_gateway_api
     build: src
+    environment:
+      BankApi__Port: "12345"
+      ASPNETCORE_ENVIRONMENT: "Development",
+      ConnectionStrings__DefaultConnection: "server=db;port=3306;database=db; user=user; password=password; Persist Security Info=False; Connect Timeout=300"
     ports:
       - "5001:80"
     depends_on:

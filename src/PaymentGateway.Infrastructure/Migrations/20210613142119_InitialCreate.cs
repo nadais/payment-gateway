@@ -15,6 +15,7 @@ namespace PaymentGateway.Infrastructure.Migrations
                 columns: table => new
                 {
                     Id = table.Column<Guid>(type: "char(36)", nullable: false, collation: "ascii_general_ci"),
+                    ShopperId = table.Column<Guid>(type: "char(36)", nullable: false, collation: "ascii_general_ci"),
                     CreatedAt = table.Column<DateTimeOffset>(type: "datetime(6)", nullable: false),
                     ModifiedAt = table.Column<DateTimeOffset>(type: "datetime(6)", nullable: true),
                     Cvv = table.Column<string>(type: "longtext", nullable: true)
@@ -39,6 +40,7 @@ namespace PaymentGateway.Infrastructure.Migrations
                     Id = table.Column<Guid>(type: "char(36)", nullable: false, collation: "ascii_general_ci"),
                     CreatedAt = table.Column<DateTimeOffset>(type: "datetime(6)", nullable: false),
                     CardId = table.Column<Guid>(type: "char(36)", nullable: false, collation: "ascii_general_ci"),
+                    ExternalId = table.Column<Guid>(type: "char(36)", nullable: true, collation: "ascii_general_ci"),
                     CardNumber = table.Column<string>(type: "longtext", nullable: true)
                         .Annotation("MySql:CharSet", "utf8mb4"),
                     ShopperId = table.Column<Guid>(type: "char(36)", nullable: false, collation: "ascii_general_ci"),

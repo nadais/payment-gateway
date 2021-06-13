@@ -13,6 +13,8 @@ namespace PaymentGateway.Domain.Entities
         
         public Guid CardId { get; set; }
 
+        public Guid? ExternalId { get; set; }
+
         public string CardNumber { get; set; }
 
         public Guid ShopperId { get; set; }

@@ -44,6 +44,9 @@ namespace PaymentGateway.Infrastructure.Migrations
                     b.Property<DateTimeOffset?>("ModifiedAt")
                         .HasColumnType("datetime(6)");
 
+                    b.Property<Guid>("ShopperId")
+                        .HasColumnType("char(36)");
+
                     b.HasKey("Id");
 
                     b.HasIndex("CardNumber")
@@ -69,6 +72,9 @@ namespace PaymentGateway.Infrastructure.Migrations
 
                     b.Property<string>("Currency")
                         .HasColumnType("longtext");
+
+                    b.Property<Guid?>("ExternalId")
+                        .HasColumnType("char(36)");
 
                     b.Property<decimal>("Quantity")
                         .HasColumnType("decimal(65,30)");

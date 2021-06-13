@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using AutoMapper;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging;
 using PaymentGateway.Application.Common.Abstractions;
 using PaymentGateway.Application.Payments.Queries;
 using PaymentGateway.Domain.Bank;
@@ -16,7 +17,7 @@ using PaymentGateway.Models.Payments;
 namespace PaymentGateway.Application.Payments.Commands
 {
 
-    public record CreatePaymentCommand(CreatePaymentRequest Request) : IRequest<PaymentDto>;
+    public record CreatePaymentCommand(Guid ShopperId, CreatePaymentRequest Request) : IRequest<PaymentDto>;
     
     public class CreatePaymentCommandHandler : IRequestHandler<CreatePaymentCommand, PaymentDto>
     {
@@ -26,13 +27,14 @@ namespace PaymentGateway.Application.Payments.Commands
         private readonly ICardEncryptionService _cardEncryptionService;
         private readonly IBankService _bankService;
         private readonly IDateTimeProvider _dateTimeProvider;
+        private readonly ILogger<CreatePaymentCommandHandler> _logger;
 
         public CreatePaymentCommandHandler(IAppDbContext appDbContext,
             ICardEncryptionService cardEncryptionService,
             IBankService bankService,
             IDateTimeProvider dateTimeProvider,
             IMapper mapper,
-            IMediator mediator)
+            IMediator mediator, ILogger<CreatePaymentCommandHandler> logger)
         {
             _appDbContext = appDbContext;
             _cardEncryptionService = cardEncryptionService;
@@ -40,6 +42,7 @@ namespace PaymentGateway.Application.Payments.Commands
             _dateTimeProvider = dateTimeProvider;
             _mapper = mapper;
             _mediator = mediator;
+            _logger = logger;
         }
 
         public async Task<PaymentDto> Handle(CreatePaymentCommand command, CancellationToken cancellationToken)
@@ -48,17 +51,36 @@ namespace PaymentGateway.Application.Payments.Commands
 
             ValidateProvidedCvv(command, card);
 
-            var isPaymentSuccessful = _bankService.ProcessCardPayment(new BankPaymentRequest
-            {
-                Currency = command.Request.Currency,
-                FromCard = _mapper.Map<CreateCardRequest>(card) with {Cvv = command.Request.Cvv},
-                Quantity = command.Request.Quantity,
-                ToAccountId = command.Request.ShopperId
-            });
+            var targetCard = _mapper.Map<CardRequest>(card) with {Cvv = command.Request.Cvv};
+
+            var isPaymentSuccessful = await SendPaymentToBankApi(command, targetCard);
 
             var payment = await StorePaymentInDatabaseAsync(command, card, isPaymentSuccessful, cancellationToken);
 
-            return await _mediator.Send(new GetPaymentByIdQuery(payment.Id), cancellationToken);
+            return await _mediator.Send(new GetPaymentByIdQuery(command.ShopperId, payment.Id), cancellationToken);
+        }
+
+        private async Task<BankPaymentResponse> SendPaymentToBankApi(CreatePaymentCommand command, CardRequest targetCard)
+        {
+            try
+            {
+                var isPaymentSuccessful = await _bankService.ProcessCardPaymentAsync(new BankPaymentRequest
+                {
+                    Currency = command.Request.Currency,
+                    FromCard = targetCard,
+                    Quantity = command.Request.Quantity,
+                    ToAccountId = command.ShopperId
+                });
+                return isPaymentSuccessful;
+            }
+            catch (ApiException ex)
+            {
+                _logger.LogError("Error occured sending payment", ex);
+                return new BankPaymentResponse
+                {
+                    IsSuccessful = false
+                };
+            }
         }
 
         private async Task<Card> GetCardById(Guid cardId, CancellationToken cancellationToken)
@@ -85,13 +107,14 @@ namespace PaymentGateway.Application.Payments.Commands
         }
 
         private async Task<Payment> StorePaymentInDatabaseAsync(CreatePaymentCommand request,
-            Card card, bool isPaymentSuccessful, CancellationToken cancellationToken)
+            Card card, BankPaymentResponse response, CancellationToken cancellationToken)
         {
             var payment = _mapper.Map<Payment>(request.Request);
             payment.CardNumber = card.CardNumber;
             payment.CreatedAt = _dateTimeProvider.GetCurrentTime();
             payment.CardId = card.Id;
-            payment.Status = isPaymentSuccessful ? PaymentStatus.Success : PaymentStatus.Failed;
+            payment.Status = response.IsSuccessful ? PaymentStatus.Success : PaymentStatus.Failed;
+            payment.ExternalId = response.Id;
 
             await _appDbContext.Payments.AddAsync(payment, cancellationToken);
             await _appDbContext.SaveChangesAsync(cancellationToken);

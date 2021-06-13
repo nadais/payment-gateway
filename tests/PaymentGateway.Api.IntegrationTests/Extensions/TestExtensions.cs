@@ -9,8 +9,11 @@ namespace PaymentGateway.Api.IntegrationTests.Extensions
     {
         public static async Task<T> ReadAsJsonAsync<T>(this HttpContent content)
         {
-            string json = await content.ReadAsStringAsync();
-            T value = JsonSerializer.Deserialize<T>(json);
+            var json = await content.ReadAsStringAsync();
+            var value = JsonSerializer.Deserialize<T>(json, new JsonSerializerOptions
+            {
+                PropertyNameCaseInsensitive = true
+            });
             return value;
         }
 
