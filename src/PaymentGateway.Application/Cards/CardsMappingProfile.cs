@@ -13,6 +13,7 @@ namespace PaymentGateway.Application.Cards
                 .ForMember(to => to.Id, how=> how.Ignore())
                 .ForMember(to => to.CreatedAt, how=> how.Ignore())
                 .ForMember(to => to.ModifiedAt, how=> how.Ignore())
+                .ForMember(to => to.ShopperId, how => how.Ignore())
                 .ReverseMap()
                 .ForMember(to => to.Cvv, how => how.Ignore());
         }

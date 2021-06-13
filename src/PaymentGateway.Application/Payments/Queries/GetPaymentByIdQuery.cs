@@ -10,7 +10,7 @@ using PaymentGateway.Models.Payments;
 
 namespace PaymentGateway.Application.Payments.Queries
 {
-    public record GetPaymentByIdQuery(Guid Id) : IRequest<PaymentDto>;
+    public record GetPaymentByIdQuery(Guid ShopperId, Guid Id) : IRequest<PaymentDto>;
     
     public class GetPaymentByIdQueryHandler : IRequestHandler<GetPaymentByIdQuery, PaymentDto>
     {
@@ -27,12 +27,13 @@ namespace PaymentGateway.Application.Payments.Queries
 
         public async Task<PaymentDto> Handle(GetPaymentByIdQuery request, CancellationToken cancellationToken)
         {
+            var (shopperId, paymentId) = request;
             var payment = await _appDbContext.Payments.AsNoTracking().SingleOrDefaultAsync(
-                x => x.Id == request.Id, cancellationToken);
+                x => x.Id == paymentId && x.ShopperId == shopperId, cancellationToken);
 
             if (payment == null)
             {
-                throw new NotFoundException($"Payment with id {request.Id} was not found");
+                throw new NotFoundException($"Payment with id {paymentId} was not found");
             }
 
             payment.CardNumber = _cardEncryptionService.GetMaskedCardNumber(payment.CardNumber);

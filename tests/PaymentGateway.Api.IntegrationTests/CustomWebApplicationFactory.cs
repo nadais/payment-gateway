@@ -7,28 +7,20 @@ using Microsoft.AspNetCore.Mvc.Authorization;
 using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.AspNetCore.TestHost;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using PaymentGateway.Api.Extensions.Authentication;
+using PaymentGateway.Infrastructure;
 using PaymentGateway.Infrastructure.Persistence;
 
 namespace PaymentGateway.Api.IntegrationTests
 {
     public class CustomWebApplicationFactory : WebApplicationFactory<Startup>
     {
-        public static string ApiKey => "FROM_ENV";
-        
         protected override void ConfigureWebHost(IWebHostBuilder builder)
         {
             builder.ConfigureServices(services => ConfigureServices(services))
                 .ConfigureTestServices(_ => { });
-        }
-
-        public HttpClient CreateClientWithDefaultApiKey(Action<HttpClient> options = null)
-        {
-            var testClient = CreateClient();
-            testClient.DefaultRequestHeaders.TryAddWithoutValidation(ApiKeyAuthenticationHandler.ApiKeyHeader, ApiKey);
-            options?.Invoke(testClient);
-            return testClient;
         }
 
         private IServiceCollection ConfigureServices(IServiceCollection services)
@@ -54,11 +46,16 @@ namespace PaymentGateway.Api.IntegrationTests
 
     public static class ServiceCollectionExtensions
     {
-        public static HttpClient CreateClientWithDefaultApiKey(this WebApplicationFactory<Startup> factory, Action<HttpClient> options = null)
+        public static HttpClient CreateClientWithShopperId(this WebApplicationFactory<Startup> factory, Guid shopperId = default)
         {
             var testClient = factory.CreateClient();
-            testClient.DefaultRequestHeaders.TryAddWithoutValidation(ApiKeyAuthenticationHandler.ApiKeyHeader, CustomWebApplicationFactory.ApiKey);
-            options?.Invoke(testClient);
+            var builder = new ConfigurationBuilder()
+                .AddJsonFile("appsettings.json", true, true)
+                .AddEnvironmentVariables()
+                .Build();
+            var tokenGenerator = new JsonWebTokenGenerator(new DateTimeProvider(), builder);
+            var token = tokenGenerator.GenerateJSONWebToken(shopperId);
+            testClient.DefaultRequestHeaders.TryAddWithoutValidation("Authorization", $"Bearer {token}");
             return testClient;
         }
         public static IServiceCollection AddDbContext(this IServiceCollection services)

@@ -30,7 +30,7 @@ namespace PaymentGateway.Api.IntegrationTests
                         services.AddScoped(_ => _dateTimeProvider);
                     });
                 });
-            var client  = factory.CreateClientWithDefaultApiKey();
+            var client  = factory.CreateClientWithShopperId();
             var card = new CardRequest
             {
                 CardNumber = "5425209346554051",

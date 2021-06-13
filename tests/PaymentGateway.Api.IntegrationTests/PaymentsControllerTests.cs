@@ -7,6 +7,7 @@ using Microsoft.Extensions.DependencyInjection;
 using NSubstitute;
 using PaymentGateway.Api.IntegrationTests.Extensions;
 using PaymentGateway.Application.Common.Abstractions;
+using PaymentGateway.Domain.Bank;
 using PaymentGateway.Infrastructure.Clients;
 using PaymentGateway.Models.Cards;
 using PaymentGateway.Models.Payments;
@@ -29,7 +30,7 @@ namespace PaymentGateway.Api.IntegrationTests
             // Arrange.
             var server = WireMockServer.Start();
             var factory = CreateFactory(server);
-            var client  = factory.CreateClientWithDefaultApiKey();
+            var client  = factory.CreateClientWithShopperId();
             var card = new CardRequest
             {
                 CardNumber = "5425209346554051",
@@ -42,14 +43,17 @@ namespace PaymentGateway.Api.IntegrationTests
             
             server.Given(Request.Create().WithPath("/transfer").UsingPost())
                 .RespondWith(
-                    Response.Create().WithBodyAsJson(true));
+                    Response.Create().WithBodyAsJson(new BankPaymentResponse
+                    {
+                        Id = Guid.NewGuid(),
+                        IsSuccessful = true
+                    }));
             var payment = new CreatePaymentRequest
             {
                 CardId = createdCard.Id,
                 Cvv = card.Cvv,
                 Currency = "EUR",
-                Quantity = 10,
-                ShopperId = Guid.NewGuid()
+                Quantity = 10
             };
             
             // Act.
@@ -67,7 +71,7 @@ namespace PaymentGateway.Api.IntegrationTests
             // Arrange.
             var server = WireMockServer.Start();
             var factory = CreateFactory(server);
-            var client  = factory.CreateClientWithDefaultApiKey();
+            var client  = factory.CreateClientWithShopperId();
             var card = new CardRequest
             {
                 CardNumber = "5425209346554051",
@@ -86,8 +90,7 @@ namespace PaymentGateway.Api.IntegrationTests
                 CardId = createdCard.Id,
                 Cvv = card.Cvv,
                 Currency = "EUR",
-                Quantity = 10,
-                ShopperId = Guid.NewGuid()
+                Quantity = 10
             };
             
             // Act.

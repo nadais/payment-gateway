@@ -48,6 +48,27 @@ namespace PaymentGateway.Application.Tests.Cards.Queries
             Assert.Equal("The provided card is expired", cardError.First());
         }
         
+        [Fact]
+        public async Task Handle_CardYearAfterTurnOfCentury_ReturnsTrue()
+        {
+            // Arrange.
+
+            var referenceDate = new DateTime(2095, 10, 10);
+            _dateTimeProvider.GetCurrentTime().Returns(referenceDate);
+            _systemUnderTest = CreateSystemUnderTests();
+
+            // Act.
+            var result = await _systemUnderTest.Handle(new ValidateCardQuery(new CardRequest
+            {
+                CardNumber = "5425209346554051",
+                ExpirationMonth = 10,
+                ExpirationYear = 04
+            }), CancellationToken.None);
+
+            // Assert.
+            Assert.True(result.IsValid);
+        }
+        
         [Theory]
         [InlineData("123456789")]
         [InlineData(null)]

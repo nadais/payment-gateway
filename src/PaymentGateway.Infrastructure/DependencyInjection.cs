@@ -22,7 +22,7 @@ namespace PaymentGateway.Infrastructure
             services.AddScoped<IDateTimeProvider, DateTimeProvider>();
             services.AddScoped<IBankService, BankService>();
             AddDbContext(services, configuration);
-            services.AddBankService();
+            services.AddBankService(configuration);
             return services;
         }
         private static void AddDbContext(IServiceCollection services, IConfiguration configuration)
@@ -34,9 +34,11 @@ namespace PaymentGateway.Infrastructure
             services.AddScoped<IAppDbContext, AppDbContext>();
         }
         
-        private static void AddBankService(this IServiceCollection services)
+        private static void AddBankService(this IServiceCollection services, IConfiguration configuration)
         {
-            var server = WireMockServer.Start();
+            var port = configuration["BankApi:Port"];
+            var server = port != null ?  WireMockServer.Start(int.Parse(port)) : WireMockServer.Start();
+            
             server.Given(Request.Create().WithPath("/transfer").UsingPost()
                 .WithBody(new JsonPathMatcher("$.quantity", "$.currency")))
                 .RespondWith(
@@ -50,7 +52,7 @@ namespace PaymentGateway.Infrastructure
                     Response.Create().WithBodyAsJson(new BankPaymentResponse
                     {
                         Id = Guid.NewGuid(),
-                        IsSuccessful = true
+                        IsSuccessful = false
                     }));
             
             services

@@ -8,9 +8,11 @@ namespace PaymentGateway.Application.Cards
         public CardRequestValidator()
         {
             RuleFor(x => x.ExpirationMonth)
-                .GreaterThan(0);
+                .GreaterThanOrEqualTo(1)
+                .LessThanOrEqualTo(12);
             RuleFor(x => x.ExpirationYear)
-                .GreaterThan(0);
+                .GreaterThanOrEqualTo(0)
+                .LessThan(100);
             RuleFor(x => x.CardNumber)
                 .NotEmpty()
                 .CreditCard();

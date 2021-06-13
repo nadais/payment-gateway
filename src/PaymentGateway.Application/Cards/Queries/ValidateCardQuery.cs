@@ -46,7 +46,12 @@ namespace PaymentGateway.Application.Cards.Queries
             var currentTime = _dateTimeProvider.GetCurrentTime();
             var last2DigitsYear = currentTime.Year % 100;
             var month = currentTime.Month;
-            return request.Card.ExpirationYear < last2DigitsYear ||
+            var isYearInFuture = request.Card.ExpirationYear > last2DigitsYear;
+            if (last2DigitsYear >= 95)
+            {
+                isYearInFuture = isYearInFuture || request.Card.ExpirationYear <= 10;
+            }
+            return !isYearInFuture ||
                     request.Card.ExpirationYear == last2DigitsYear && request.Card.ExpirationMonth < month;
         }
 

@@ -1,9 +1,8 @@
-using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Reflection;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.OpenApi.Models;
-using PaymentGateway.Api.Extensions.Authentication;
 using Swashbuckle.AspNetCore.SwaggerGen;
 
 namespace PaymentGateway.Api.Extensions.Swagger
@@ -32,13 +31,14 @@ namespace PaymentGateway.Api.Extensions.Swagger
 
         private static void AddApiKeyAuthorizeScheme(SwaggerGenOptions c)
         {
-            c.AddSecurityDefinition("api-key", new OpenApiSecurityScheme
+            c.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
             {
-                Description = "Default ApiKey Authorization",
+                Description = @"Enter Bearer [space] and then your token in the text input below. 
+                        Example: 'Bearer 12345abcdef'",
+                Name = "Authorization",
                 In = ParameterLocation.Header,
-                Name = ApiKeyAuthenticationHandler.ApiKeyHeader,
                 Type = SecuritySchemeType.ApiKey,
-                Scheme = "api-key"
+                Scheme = "Bearer"
             });
 
             c.AddSecurityRequirement(new OpenApiSecurityRequirement
@@ -49,13 +49,14 @@ namespace PaymentGateway.Api.Extensions.Swagger
                         Reference = new OpenApiReference
                         {
                             Type = ReferenceType.SecurityScheme,
-                            Id = "api-key"
+                            Id = "Bearer"
                         },
-                        Scheme = "api-key",
-                        Name = "api-key",
-                        In = ParameterLocation.Header
+                        Scheme = "oauth2",
+                        Name = "Bearer",
+                        In = ParameterLocation.Header,
+
                     },
-                    Array.Empty<string>()
+                    new List<string>()
                 }
             });
         }

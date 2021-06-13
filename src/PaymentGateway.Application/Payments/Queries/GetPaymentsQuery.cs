@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
@@ -13,7 +14,7 @@ using PaymentGateway.Models.Payments;
 
 namespace PaymentGateway.Application.Payments.Queries
 {
-    public record GetPaymentsQuery(GetPaymentsRequest Request) : IRequest<PageResult<PaymentDto>>;
+    public record GetPaymentsQuery(Guid ShopperId, GetPaymentsRequest Request) : IRequest<PageResult<PaymentDto>>;
     
     public class GetPaymentsQueryHandler : IRequestHandler<GetPaymentsQuery, PageResult<PaymentDto>>
     {
@@ -28,19 +29,19 @@ namespace PaymentGateway.Application.Payments.Queries
 
         public async Task<PageResult<PaymentDto>> Handle(GetPaymentsQuery request, CancellationToken cancellationToken)
         {
-            var queryable = _appDbContext.Payments.AsNoTracking();
-            var parameters = request.Request;
-            if (parameters.ShopperId != null)
+            var (shopperId, parameters) = request;
+            var queryable = _appDbContext.Payments.AsNoTracking().Where(x => x.ShopperId == shopperId);
+
+            if (parameters.OrderBy != null)
             {
-                queryable = queryable.Where(x => x.ShopperId == request.Request.ShopperId);
+                queryable = OrderBy(queryable, parameters.OrderBy, parameters.OrderByDescending);
             }
-            
-            queryable = OrderBy(queryable, parameters.OrderBy, parameters.OrderByDescending);
 
             var count = await queryable.CountAsync(cancellationToken);
 
-            queryable = queryable.Take(parameters.Top)
-                .Skip(parameters.Skip);
+            queryable = queryable
+                .Skip(parameters.Skip)
+                .Take(parameters.Top);
 
             var payments = await queryable.ToListAsync(cancellationToken);
 

@@ -17,7 +17,7 @@ using PaymentGateway.Models.Payments;
 namespace PaymentGateway.Application.Payments.Commands
 {
 
-    public record CreatePaymentCommand(CreatePaymentRequest Request) : IRequest<PaymentDto>;
+    public record CreatePaymentCommand(Guid ShopperId, CreatePaymentRequest Request) : IRequest<PaymentDto>;
     
     public class CreatePaymentCommandHandler : IRequestHandler<CreatePaymentCommand, PaymentDto>
     {
@@ -57,7 +57,7 @@ namespace PaymentGateway.Application.Payments.Commands
 
             var payment = await StorePaymentInDatabaseAsync(command, card, isPaymentSuccessful, cancellationToken);
 
-            return await _mediator.Send(new GetPaymentByIdQuery(payment.Id), cancellationToken);
+            return await _mediator.Send(new GetPaymentByIdQuery(command.ShopperId, payment.Id), cancellationToken);
         }
 
         private async Task<BankPaymentResponse> SendPaymentToBankApi(CreatePaymentCommand command, CardRequest targetCard)
@@ -69,7 +69,7 @@ namespace PaymentGateway.Application.Payments.Commands
                     Currency = command.Request.Currency,
                     FromCard = targetCard,
                     Quantity = command.Request.Quantity,
-                    ToAccountId = command.Request.ShopperId
+                    ToAccountId = command.ShopperId
                 });
                 return isPaymentSuccessful;
             }

@@ -6,6 +6,8 @@ namespace PaymentGateway.Models.Cards
     {
         public Guid Id { get; init; }
 
+        public Guid ShopperId { get; init; }
+
         public string Cvv { get; init; }
 
         public string CardNumber { get; init; }

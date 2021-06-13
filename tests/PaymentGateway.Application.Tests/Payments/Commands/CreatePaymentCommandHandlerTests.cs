@@ -53,7 +53,7 @@ namespace PaymentGateway.Application.Tests.Payments.Commands
             var error = await Assert.ThrowsAsync<NotFoundException>(async () =>
             {
                 // Act.
-                await _systemUnderTest.Handle(new CreatePaymentCommand(new CreatePaymentRequest
+                await _systemUnderTest.Handle(new CreatePaymentCommand(Guid.NewGuid(),new CreatePaymentRequest
                 {
                     CardId = Guid.NewGuid(),
                     Cvv = 12
@@ -81,7 +81,7 @@ namespace PaymentGateway.Application.Tests.Payments.Commands
             var error = await Assert.ThrowsAsync<ApiException>(async () =>
             {
                 // Act.
-                await _systemUnderTest.Handle(new CreatePaymentCommand(new CreatePaymentRequest
+                await _systemUnderTest.Handle(new CreatePaymentCommand(Guid.NewGuid(),new CreatePaymentRequest
                 {
                     CardId = id,
                     Cvv = 12

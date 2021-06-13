@@ -1,3 +1,4 @@
+using System;
 using System.Threading;
 using System.Threading.Tasks;
 using AutoMapper;
@@ -9,7 +10,7 @@ using PaymentGateway.Models.Cards;
 
 namespace PaymentGateway.Application.Cards.Commands
 {
-    public record CreateCardCommand(CardRequest Request) : IRequest<CardDto>;
+    public record CreateCardCommand(Guid ShopperId, CardRequest Request) : IRequest<CardDto>;
     
     public class CreateCardCommandHandler : IRequestHandler<CreateCardCommand, CardDto>
     {
@@ -35,10 +36,11 @@ namespace PaymentGateway.Application.Cards.Commands
 
             entity.Cvv = _cardEncryptionService.GetEncryptedCvv(command.Request.Cvv);
             entity.CreatedAt = _dateTimeProvider.GetCurrentTime();
+            entity.ShopperId = command.ShopperId;
             
             await _appDbContext.Cards.AddAsync(entity, cancellationToken);
             await _appDbContext.SaveChangesAsync(cancellationToken);
-            return await _mediator.Send(new GetCardByIdQuery(entity.Id), cancellationToken);
+            return await _mediator.Send(new GetCardByIdQuery(entity.Id, command.ShopperId), cancellationToken);
         }
     }
 }
