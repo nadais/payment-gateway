@@ -9,7 +9,7 @@ using PaymentGateway.Domain.Exceptions;
 using PaymentGateway.Models.Cards;
 using Xunit;
 
-namespace PaymentGateway.Application.Tests.Queries
+namespace PaymentGateway.Application.Tests.Cards.Queries
 {
     public class ValidateCardQueryHandlerTests
     {
@@ -36,7 +36,7 @@ namespace PaymentGateway.Application.Tests.Queries
             var error = await Assert.ThrowsAsync<ApiException>(async () =>
             {
                 // Act.
-                await _systemUnderTest.Handle(new ValidateCardQuery(new CardDto
+                await _systemUnderTest.Handle(new ValidateCardQuery(new CardRequest
                 {
                     ExpirationMonth = expirationMonth,
                     ExpirationYear = expirationYear
@@ -63,7 +63,7 @@ namespace PaymentGateway.Application.Tests.Queries
             var error = await Assert.ThrowsAsync<ApiException>(async () =>
             {
                 // Act.
-                await _systemUnderTest.Handle(new ValidateCardQuery(new CardDto
+                await _systemUnderTest.Handle(new ValidateCardQuery(new CardRequest
                 {
                     CardNumber = cardNumber
                 }), CancellationToken.None);

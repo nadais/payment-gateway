@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using PaymentGateway.Application.Payments.Commands;
 using PaymentGateway.Application.Payments.Queries;
+using PaymentGateway.Models;
 using PaymentGateway.Models.Payments;
 
 namespace PaymentGateway.Api.Controllers
@@ -31,6 +32,15 @@ namespace PaymentGateway.Api.Controllers
         public async Task<PaymentDto> GetPaymentById([FromRoute] Guid id, CancellationToken cancellationToken = default)
         {
             return await _mediator.Send(new GetPaymentByIdQuery(id), cancellationToken);
+
+        }
+        
+        [HttpGet]
+        public async Task<PageResult<PaymentDto>> GetPayments([FromQuery] GetPaymentsRequest request, CancellationToken cancellationToken = default)
+        {
+            request = request with {Top = request.Top == 0? 100 : request.Top };
+            return await _mediator.Send(new GetPaymentsQuery(request), cancellationToken);
+
         }
     }
 }

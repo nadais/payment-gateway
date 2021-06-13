@@ -16,8 +16,6 @@ namespace PaymentGateway.Models.Cards
 
         public int ExpirationYear { get; init; }
 
-        public Guid ShopperId { get; init; }
-
         public DateTimeOffset CreatedAt { get; init; }
 
         public DateTimeOffset? ModifiedAt { get; set; }

@@ -18,5 +18,7 @@ namespace PaymentGateway.Models.Payments
 
         public DateTimeOffset CreatedAt { get; init; }
 
+        public PaymentStatus Status { get; set; }
+
     }
 }

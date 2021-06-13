@@ -8,11 +8,13 @@ namespace PaymentGateway.Application.Cards
     {
         public CardsMappingProfile()
         {
-            CreateMap<CardDto, Card>();
-            CreateMap<CreateCardRequest, Card>()
+            CreateMap<Card, CardDto>();
+            CreateMap<CardRequest, Card>()
                 .ForMember(to => to.Id, how=> how.Ignore())
                 .ForMember(to => to.CreatedAt, how=> how.Ignore())
-                .ForMember(to => to.ModifiedAt, how=> how.Ignore());
+                .ForMember(to => to.ModifiedAt, how=> how.Ignore())
+                .ReverseMap()
+                .ForMember(to => to.Cvv, how => how.Ignore());
         }
     }
 }

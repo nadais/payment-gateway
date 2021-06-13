@@ -10,7 +10,7 @@ using PaymentGateway.Models.Cards;
 
 namespace PaymentGateway.Application.Cards.Queries
 {
-    public record ValidateCardQuery(CardDto Card) : IRequest<CardValidationResponse>;
+    public record ValidateCardQuery(CardRequest Card) : IRequest<CardValidationResponse>;
 
     public class ValidateCardQueryHandler : IRequestHandler<ValidateCardQuery, CardValidationResponse>
     {

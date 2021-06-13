@@ -9,7 +9,7 @@ using PaymentGateway.Models.Cards;
 
 namespace PaymentGateway.Application.Cards.Commands
 {
-    public record CreateCardCommand(CreateCardRequest Request) : IRequest<CardDto>;
+    public record CreateCardCommand(CardRequest Request) : IRequest<CardDto>;
     
     public class CreateCardCommandHandler : IRequestHandler<CreateCardCommand, CardDto>
     {
@@ -28,7 +28,7 @@ namespace PaymentGateway.Application.Cards.Commands
         }
         public async Task<CardDto> Handle(CreateCardCommand command, CancellationToken cancellationToken)
         {
-            await _mediator.Send(new ValidateCardQuery(_mapper.Map<CardDto>(command.Request)), cancellationToken);
+            await _mediator.Send(new ValidateCardQuery(command.Request), cancellationToken);
 
 
             var entity = _mapper.Map<Card>(command.Request);
@@ -38,7 +38,7 @@ namespace PaymentGateway.Application.Cards.Commands
             
             await _appDbContext.Cards.AddAsync(entity, cancellationToken);
             await _appDbContext.SaveChangesAsync(cancellationToken);
-            return _mapper.Map<CardDto>(entity);
+            return await _mediator.Send(new GetCardByIdQuery(entity.Id), cancellationToken);
         }
     }
 }

@@ -22,13 +22,13 @@ namespace PaymentGateway.Api.Controllers
         }
         
         [HttpPost("validation")]
-        public async Task<CardValidationResponse> ValidateCard([FromBody] CardDto request, CancellationToken cancellationToken = default)
+        public async Task<CardValidationResponse> ValidateCard([FromBody] CardRequest request, CancellationToken cancellationToken = default)
         {
              return await _mediator.Send(new ValidateCardQuery(request), cancellationToken);
         }
         
         [HttpPost]
-        public async Task<CardDto> CreateCard([FromBody] CreateCardRequest request, CancellationToken cancellationToken = default)
+        public async Task<CardDto> CreateCard([FromBody] CardRequest request, CancellationToken cancellationToken = default)
         {
             return await _mediator.Send(new CreateCardCommand(request), cancellationToken);
         }

@@ -2,7 +2,7 @@ using System;
 
 namespace PaymentGateway.Models.Cards
 {
-    public record CreateCardRequest
+    public record CardRequest
     {
         public int Cvv { get; init; }
 
@@ -13,7 +13,5 @@ namespace PaymentGateway.Models.Cards
         public int ExpirationMonth { get; init; }
 
         public int ExpirationYear { get; init; }
-
-        public Guid ShopperId { get; init; }
     }
 }

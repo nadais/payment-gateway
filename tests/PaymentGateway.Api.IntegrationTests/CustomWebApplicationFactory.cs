@@ -1,7 +1,7 @@
 using System;
+using System.Linq;
 using System.Net.Http;
 using System.Reflection;
-using Microsoft.AspNetCore;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc.Authorization;
 using Microsoft.AspNetCore.Mvc.Testing;
@@ -16,18 +16,11 @@ namespace PaymentGateway.Api.IntegrationTests
     public class CustomWebApplicationFactory : WebApplicationFactory<Startup>
     {
         public static string ApiKey => "FROM_ENV";
-        private readonly Action<IServiceCollection> _action;
-        public CustomWebApplicationFactory(Action<IServiceCollection> action)
+        
+        protected override void ConfigureWebHost(IWebHostBuilder builder)
         {
-            _action = action;
-        }
-
-        protected override IWebHostBuilder CreateWebHostBuilder()
-        {
-            return WebHost.CreateDefaultBuilder(null)
-                  .ConfigureServices(services => ConfigureServices(services))
-                .ConfigureTestServices(services => { })
-                .UseStartup<Startup>();
+            builder.ConfigureServices(services => ConfigureServices(services))
+                .ConfigureTestServices(_ => { });
         }
 
         public HttpClient CreateClientWithDefaultApiKey(Action<HttpClient> options = null)
@@ -52,8 +45,7 @@ namespace PaymentGateway.Api.IntegrationTests
             var appDb = scopedServices.GetRequiredService<AppDbContext>();
 
             // Ensure the database is created.
-            appDb.Database.EnsureCreated();
-            _action?.Invoke(services);
+            var result = appDb.Database.EnsureCreated();
             return services;
         }
 
@@ -62,15 +54,25 @@ namespace PaymentGateway.Api.IntegrationTests
 
     public static class ServiceCollectionExtensions
     {
+        public static HttpClient CreateClientWithDefaultApiKey(this WebApplicationFactory<Startup> factory, Action<HttpClient> options = null)
+        {
+            var testClient = factory.CreateClient();
+            testClient.DefaultRequestHeaders.TryAddWithoutValidation(ApiKeyAuthenticationHandler.ApiKeyHeader, CustomWebApplicationFactory.ApiKey);
+            options?.Invoke(testClient);
+            return testClient;
+        }
         public static IServiceCollection AddDbContext(this IServiceCollection services)
         {
-            var serviceProvider = new ServiceCollection()
-                .AddEntityFrameworkSqlite()
-                .BuildServiceProvider();
+            var descriptor = services.SingleOrDefault
+                (d => d.ServiceType == typeof(DbContextOptions<AppDbContext>));
+
+            if (descriptor != null)
+            {
+                services.Remove(descriptor);
+            }
             services.AddDbContext<AppDbContext>(options =>
             {
-                options.UseSqlite("DataSource=:memory:");
-                options.UseInternalServiceProvider(serviceProvider);
+                options.UseInMemoryDatabase("InMemoryDbForTesting");
             });
             return services;
         }

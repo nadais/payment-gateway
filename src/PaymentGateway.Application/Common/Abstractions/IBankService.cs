@@ -1,9 +1,10 @@
-﻿using PaymentGateway.Domain.Bank;
+﻿using System.Threading.Tasks;
+using PaymentGateway.Domain.Bank;
 
 namespace PaymentGateway.Application.Common.Abstractions
 {
     public interface IBankService
     {
-        bool ProcessCardPayment(BankPaymentRequest request);
+        Task<BankPaymentResponse> ProcessCardPaymentAsync(BankPaymentRequest request);
     }
 }
