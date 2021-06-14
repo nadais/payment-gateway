@@ -1,15 +1,16 @@
 ﻿using System;
+using PaymentGateway.Models.Cards;
 
 namespace PaymentGateway.Models.Payments
 {
     public record CreatePaymentRequest
     {
-        public Guid CardId { get; set; }
+        public CardRequest Card { get; init; }
 
-        public int Cvv { get; set; }
+        public string Currency { get; init; }
 
-        public string Currency { get; set; }
+        public decimal Amount { get; init; }
 
-        public decimal Quantity { get; set; }
+        public DateTimeOffset SentAt { get; init; }
     }
 }

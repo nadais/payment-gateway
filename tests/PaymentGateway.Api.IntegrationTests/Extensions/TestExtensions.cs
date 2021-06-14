@@ -1,6 +1,7 @@
 using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Text.Json;
+using System.Text.Json.Serialization;
 using System.Threading.Tasks;
 
 namespace PaymentGateway.Api.IntegrationTests.Extensions
@@ -10,10 +11,12 @@ namespace PaymentGateway.Api.IntegrationTests.Extensions
         public static async Task<T> ReadAsJsonAsync<T>(this HttpContent content)
         {
             var json = await content.ReadAsStringAsync();
-            var value = JsonSerializer.Deserialize<T>(json, new JsonSerializerOptions
+            var options = new JsonSerializerOptions
             {
                 PropertyNameCaseInsensitive = true
-            });
+            };
+            options.Converters.Add(new JsonStringEnumConverter());
+            var value = JsonSerializer.Deserialize<T>(json,options);
             return value;
         }
 

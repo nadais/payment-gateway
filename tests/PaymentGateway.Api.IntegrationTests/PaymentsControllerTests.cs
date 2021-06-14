@@ -30,17 +30,8 @@ namespace PaymentGateway.Api.IntegrationTests
             // Arrange.
             var server = WireMockServer.Start();
             var factory = CreateFactory(server);
-            var client  = factory.CreateClientWithShopperId();
-            var card = new CardRequest
-            {
-                CardNumber = "5425209346554051",
-                ExpirationMonth = 11,
-                ExpirationYear = 19,
-                Cvv = 123
-            };
-            var response = await client.PostAsync($"{CardsControllerTests.CardsUrl}", card.CreateByteContent());
-            var createdCard = await response.Content.ReadAsJsonAsync<CardDto>();
-            
+            var client = factory.CreateClientWithShopperId();
+
             server.Given(Request.Create().WithPath("/transfer").UsingPost())
                 .RespondWith(
                     Response.Create().WithBodyAsJson(new BankPaymentResponse
@@ -50,51 +41,54 @@ namespace PaymentGateway.Api.IntegrationTests
                     }));
             var payment = new CreatePaymentRequest
             {
-                CardId = createdCard.Id,
-                Cvv = card.Cvv,
+                Card = new CardRequest
+                {
+                    CardNumber = "5425209346554051",
+                    ExpirationMonth = 11,
+                    ExpirationYear = 19,
+                    Cvv = 123
+                },
                 Currency = "EUR",
-                Quantity = 10
+                Amount = 10
             };
-            
+
             // Act.
-            response = await client.PostAsync($"{PaymentsUrl}", payment.CreateByteContent());
+            var response = await client.PostAsync($"{PaymentsUrl}", payment.CreateByteContent());
             var createdPayment = await response.Content.ReadAsJsonAsync<PaymentDto>();
+
             // Assert.
             Assert.Equal(HttpStatusCode.OK, response.StatusCode);
             Assert.NotEqual(Guid.Empty, createdPayment.Id);
-            Assert.Equal(PaymentStatus.Success, createdPayment.Status);
+             Assert.Equal(PaymentStatus.Success, createdPayment.Status);
         }
-        
+
+
         [Fact]
         public async Task CreatePayment_BankServiceIsUnavailable_ReturnsPaymentFailedButStatusOk()
         {
             // Arrange.
             var server = WireMockServer.Start();
             var factory = CreateFactory(server);
-            var client  = factory.CreateClientWithShopperId();
-            var card = new CardRequest
-            {
-                CardNumber = "5425209346554051",
-                ExpirationMonth = 11,
-                ExpirationYear = 19,
-                Cvv = 123
-            };
-            var response = await client.PostAsync($"{CardsControllerTests.CardsUrl}", card.CreateByteContent());
-            var createdCard = await response.Content.ReadAsJsonAsync<CardDto>();
-            
+            var client = factory.CreateClientWithShopperId();
+
             server.Given(Request.Create().WithPath("/transfer").UsingPost())
                 .RespondWith(
                     Response.Create().WithStatusCode(HttpStatusCode.GatewayTimeout));
             var payment = new CreatePaymentRequest
             {
-                CardId = createdCard.Id,
-                Cvv = card.Cvv,
+                Card = new CardRequest
+                {
+                    CardNumber = "5425209346554051",
+                    ExpirationMonth = 11,
+                    ExpirationYear = 19,
+                    Cvv = 123
+                },
                 Currency = "EUR",
-                Quantity = 10
+                Amount = 10
             };
-            
+
             // Act.
-            response = await client.PostAsync($"{PaymentsUrl}", payment.CreateByteContent());
+            var response = await client.PostAsync($"{PaymentsUrl}", payment.CreateByteContent());
             var createdPayment = await response.Content.ReadAsJsonAsync<PaymentDto>();
             // Assert.
             Assert.Equal(HttpStatusCode.OK, response.StatusCode);

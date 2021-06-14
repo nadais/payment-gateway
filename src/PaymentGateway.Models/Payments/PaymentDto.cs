@@ -1,4 +1,5 @@
 ﻿using System;
+using PaymentGateway.Models.Cards;
 
 namespace PaymentGateway.Models.Payments
 {
@@ -10,11 +11,9 @@ namespace PaymentGateway.Models.Payments
         
         public string Currency { get; init; }
 
-        public decimal Quantity { get; init; }
-        
-        public Guid CardId { get; init; }
+        public decimal Amount { get; init; }
 
-        public string CardNumber { get; init; }
+        public CardDto Card { get; set; }
 
         public DateTimeOffset CreatedAt { get; init; }
 

@@ -1,11 +1,13 @@
 ﻿using System;
-using System.Net;
+using System.Collections.Concurrent;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using AutoMapper;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
+using PaymentGateway.Application.Cards.Queries;
 using PaymentGateway.Application.Common.Abstractions;
 using PaymentGateway.Application.Payments.Queries;
 using PaymentGateway.Domain.Bank;
@@ -21,13 +23,14 @@ namespace PaymentGateway.Application.Payments.Commands
     
     public class CreatePaymentCommandHandler : IRequestHandler<CreatePaymentCommand, PaymentDto>
     {
-        private readonly IMapper _mapper;
-        private readonly IMediator _mediator;
         private readonly IAppDbContext _appDbContext;
-        private readonly ICardEncryptionService _cardEncryptionService;
         private readonly IBankService _bankService;
+        private readonly ICardEncryptionService _cardEncryptionService;
         private readonly IDateTimeProvider _dateTimeProvider;
         private readonly ILogger<CreatePaymentCommandHandler> _logger;
+        private readonly IMapper _mapper;
+        private readonly IMediator _mediator;
+        private ConcurrentDictionary<string, Payment> _paymentsBeingProcessed = new();
 
         public CreatePaymentCommandHandler(IAppDbContext appDbContext,
             ICardEncryptionService cardEncryptionService,
@@ -47,17 +50,49 @@ namespace PaymentGateway.Application.Payments.Commands
 
         public async Task<PaymentDto> Handle(CreatePaymentCommand command, CancellationToken cancellationToken)
         {
-            var card = await GetCardById(command.Request.CardId, cancellationToken);
+            var cardRequest = command.Request.Card;
+            var preprocessedPayment = await GetAlreadyProcessedPayment(command, cancellationToken);
 
-            ValidateProvidedCvv(command, card);
+            if (preprocessedPayment != null)
+            {
+                return _mapper.Map<PaymentDto>(preprocessedPayment);
+            }
 
-            var targetCard = _mapper.Map<CardRequest>(card) with {Cvv = command.Request.Cvv};
+            var isPaymentSuccessful = await SendPaymentToBankApi(command, cardRequest);
 
-            var isPaymentSuccessful = await SendPaymentToBankApi(command, targetCard);
-
-            var payment = await StorePaymentInDatabaseAsync(command, card, isPaymentSuccessful, cancellationToken);
+            var payment = await StorePaymentInDatabaseAsync(command, cardRequest, isPaymentSuccessful, cancellationToken);
+            var keyValuePair = _paymentsBeingProcessed.ToArray()
+                .Single(x => x.Key == payment.Key);
+            _paymentsBeingProcessed.TryRemove(keyValuePair);
 
             return await _mediator.Send(new GetPaymentByIdQuery(command.ShopperId, payment.Id), cancellationToken);
+        }
+
+        private async Task<Payment> GetAlreadyProcessedPayment(CreatePaymentCommand command, CancellationToken cancellationToken)
+        {
+            var (shopperId, createPaymentRequest) = command;
+            var uniqueKey = GetUniqueKey(shopperId, createPaymentRequest);
+            if (_paymentsBeingProcessed.ContainsKey(uniqueKey))
+            {
+                return _paymentsBeingProcessed[uniqueKey];
+            }
+            var finishedPayment = await _appDbContext.Payments.FirstOrDefaultAsync(x => x.Key == uniqueKey, cancellationToken);
+            if (finishedPayment != null)
+            {
+                return finishedPayment;
+            }
+            var payment = _mapper.Map<Payment>(createPaymentRequest);
+            payment.Key = uniqueKey;
+            payment.CreatedAt = _dateTimeProvider.GetCurrentTime();
+            payment.ShopperId = shopperId;
+            payment.Status = PaymentStatus.InProgress;
+            _paymentsBeingProcessed.TryAdd(uniqueKey, payment);
+            return null;
+        }
+
+        private static string GetUniqueKey(Guid shopperId, CreatePaymentRequest createPaymentRequest)
+        {
+            return $"{shopperId}_{createPaymentRequest.Card.CardNumber}_{createPaymentRequest.SentAt}";
         }
 
         private async Task<BankPaymentResponse> SendPaymentToBankApi(CreatePaymentCommand command, CardRequest targetCard)
@@ -68,7 +103,7 @@ namespace PaymentGateway.Application.Payments.Commands
                 {
                     Currency = command.Request.Currency,
                     FromCard = targetCard,
-                    Quantity = command.Request.Quantity,
+                    Quantity = command.Request.Amount,
                     ToAccountId = command.ShopperId
                 });
                 return bankPaymentResponse;
@@ -83,43 +118,46 @@ namespace PaymentGateway.Application.Payments.Commands
             }
         }
 
-        private async Task<Card> GetCardById(Guid cardId, CancellationToken cancellationToken)
-        {
-            var card = await _appDbContext.Cards.AsNoTracking()
-                .SingleOrDefaultAsync(x => x.Id == cardId, cancellationToken);
-
-            if (card == null)
-            {
-                throw new NotFoundException($"No card found with id {cardId}");
-            }
-
-            return card;
-        }
-
-        private void ValidateProvidedCvv(CreatePaymentCommand request, Card card)
-        {
-            var newCvv = _cardEncryptionService.GetEncryptedCvv(request.Request.Cvv);
-            if (newCvv != card.Cvv)
-            {
-                throw new ApiException(HttpStatusCode.BadRequest, "The cvv provided does not match the card's cvv",
-                    "INVALID_CVV");
-            }
-        }
-
         private async Task<Payment> StorePaymentInDatabaseAsync(CreatePaymentCommand request,
-            Card card, BankPaymentResponse response, CancellationToken cancellationToken)
+            CardRequest cardRequest, BankPaymentResponse response, CancellationToken cancellationToken)
         {
-            var payment = _mapper.Map<Payment>(request.Request);
-            payment.CardNumber = card.CardNumber;
-            payment.CreatedAt = _dateTimeProvider.GetCurrentTime();
-            payment.ShopperId = request.ShopperId;
-            payment.CardId = card.Id;
+            var payment = _paymentsBeingProcessed[GetUniqueKey(request.ShopperId, request.Request)];
             payment.Status = response.IsSuccessful ? PaymentStatus.Success : PaymentStatus.Failed;
             payment.ExternalId = response.Id;
 
+            var card = await GetCardToAdd(cardRequest, cancellationToken);
+            if (card.Id == Guid.Empty)
+            {
+                payment.Card = card;
+            }
+            else
+            {
+                payment.CardId = card.Id;
+                payment.Card = null;
+            }
             await _appDbContext.Payments.AddAsync(payment, cancellationToken);
             await _appDbContext.SaveChangesAsync(cancellationToken);
             return payment;
+        }
+
+        private async Task<Card> GetCardToAdd(CardRequest cardRequest, CancellationToken cancellationToken)
+        {
+            try
+            {
+                var storedCard =
+                    await _mediator.Send(new GetCardByNumberQuery(cardRequest.CardNumber), cancellationToken);
+                return new Card
+                {
+                    Id = storedCard.Id
+                };
+            }
+            catch (NotFoundException)
+            {
+                var returnedCard = _mapper.Map<Card>(cardRequest);
+                returnedCard.CreatedAt = _dateTimeProvider.GetCurrentTime();
+                returnedCard.Cvv = _cardEncryptionService.GetEncryptedCvv(cardRequest.Cvv);
+                return returnedCard;
+            }
         }
     }
 }
