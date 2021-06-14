@@ -3,14 +3,14 @@ using PaymentGateway.Models.Cards;
 
 namespace PaymentGateway.Domain.Bank
 {
-    public class BankPaymentRequest
+    public record BankPaymentRequest
     {
-        public CardRequest FromCard { get; set; }
+        public CardRequest FromCard { get; init; }
 
-        public string Currency { get; set; }
+        public string Currency { get; init; }
 
-        public decimal Quantity { get; set; }
+        public decimal Amount { get; init; }
 
-        public Guid ToAccountId { get; set; }
+        public Guid ToAccountId { get; init; }
     }
 }

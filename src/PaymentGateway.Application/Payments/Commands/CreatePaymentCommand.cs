@@ -18,9 +18,8 @@ using PaymentGateway.Models.Payments;
 
 namespace PaymentGateway.Application.Payments.Commands
 {
-
     public record CreatePaymentCommand(Guid ShopperId, CreatePaymentRequest Request) : IRequest<PaymentDto>;
-    
+
     public class CreatePaymentCommandHandler : IRequestHandler<CreatePaymentCommand, PaymentDto>
     {
         private readonly IAppDbContext _appDbContext;
@@ -58,9 +57,11 @@ namespace PaymentGateway.Application.Payments.Commands
                 return _mapper.Map<PaymentDto>(preprocessedPayment);
             }
 
-            var isPaymentSuccessful = await SendPaymentToBankApi(command, cardRequest);
+            var isPaymentSuccessful = await SendPaymentToBankApiAsync(command, cardRequest);
 
-            var payment = await StorePaymentInDatabaseAsync(command, cardRequest, isPaymentSuccessful, cancellationToken);
+            var payment =
+                await StorePaymentInDatabaseAsync(command, cardRequest, isPaymentSuccessful, cancellationToken);
+
             var keyValuePair = _paymentsBeingProcessed.ToArray()
                 .Single(x => x.Key == payment.Key);
             _paymentsBeingProcessed.TryRemove(keyValuePair);
@@ -68,7 +69,8 @@ namespace PaymentGateway.Application.Payments.Commands
             return await _mediator.Send(new GetPaymentByIdQuery(command.ShopperId, payment.Id), cancellationToken);
         }
 
-        private async Task<Payment> GetAlreadyProcessedPayment(CreatePaymentCommand command, CancellationToken cancellationToken)
+        private async Task<Payment> GetAlreadyProcessedPayment(CreatePaymentCommand command,
+            CancellationToken cancellationToken)
         {
             var (shopperId, createPaymentRequest) = command;
             var uniqueKey = GetUniqueKey(shopperId, createPaymentRequest);
@@ -76,11 +78,14 @@ namespace PaymentGateway.Application.Payments.Commands
             {
                 return _paymentsBeingProcessed[uniqueKey];
             }
-            var finishedPayment = await _appDbContext.Payments.FirstOrDefaultAsync(x => x.Key == uniqueKey, cancellationToken);
+
+            var finishedPayment =
+                await _appDbContext.Payments.FirstOrDefaultAsync(x => x.Key == uniqueKey, cancellationToken);
             if (finishedPayment != null)
             {
                 return finishedPayment;
             }
+
             var payment = _mapper.Map<Payment>(createPaymentRequest);
             payment.Key = uniqueKey;
             payment.CreatedAt = _dateTimeProvider.GetCurrentTime();
@@ -95,7 +100,8 @@ namespace PaymentGateway.Application.Payments.Commands
             return $"{shopperId}_{createPaymentRequest.Card.CardNumber}_{createPaymentRequest.SentAt}";
         }
 
-        private async Task<BankPaymentResponse> SendPaymentToBankApi(CreatePaymentCommand command, CardRequest targetCard)
+        private async Task<BankPaymentResponse> SendPaymentToBankApiAsync(CreatePaymentCommand command,
+            CardRequest targetCard)
         {
             try
             {
@@ -103,14 +109,14 @@ namespace PaymentGateway.Application.Payments.Commands
                 {
                     Currency = command.Request.Currency,
                     FromCard = targetCard,
-                    Quantity = command.Request.Amount,
+                    Amount = command.Request.Amount,
                     ToAccountId = command.ShopperId
                 });
                 return bankPaymentResponse;
             }
             catch (ApiException ex)
             {
-                _logger.LogError("Error occured sending payment", ex);
+                _logger.LogWarning("Error occured sending payment", ex);
                 return new BankPaymentResponse
                 {
                     IsSuccessful = false
@@ -135,6 +141,7 @@ namespace PaymentGateway.Application.Payments.Commands
                 payment.CardId = card.Id;
                 payment.Card = null;
             }
+
             await _appDbContext.Payments.AddAsync(payment, cancellationToken);
             await _appDbContext.SaveChangesAsync(cancellationToken);
             return payment;

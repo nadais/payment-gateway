@@ -40,7 +40,7 @@ namespace PaymentGateway.Infrastructure
             var server = port != null ?  WireMockServer.Start(int.Parse(port)) : WireMockServer.Start();
             
             server.Given(Request.Create().WithPath("/transfer").UsingPost()
-                .WithBody(new JsonPathMatcher("$.quantity", "$.currency")))
+                .WithBody(new JsonPathMatcher("$.amount", "$.currency")))
                 .RespondWith(
                     Response.Create().WithBodyAsJson(new BankPaymentResponse
                     {
