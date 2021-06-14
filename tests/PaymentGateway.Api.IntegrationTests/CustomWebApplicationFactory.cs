@@ -26,10 +26,8 @@ namespace PaymentGateway.Api.IntegrationTests
         private IServiceCollection ConfigureServices(IServiceCollection services)
         {
             services.AddDbContext();
-            services.AddMvc(options =>
-            {
-                options.Filters.Add(new AllowAnonymousFilter());
-            }).AddApplicationPart(Assembly.Load(typeof(Startup).Assembly.GetName()));
+            services.AddMvc(options => { options.Filters.Add(new AllowAnonymousFilter()); })
+                .AddApplicationPart(Assembly.Load(typeof(Startup).Assembly.GetName()));
 
             var sp = services.BuildServiceProvider();
             using var scope = sp.CreateScope();
@@ -37,16 +35,15 @@ namespace PaymentGateway.Api.IntegrationTests
             var appDb = scopedServices.GetRequiredService<AppDbContext>();
 
             // Ensure the database is created.
-            var result = appDb.Database.EnsureCreated();
+            appDb.Database.EnsureCreated();
             return services;
         }
-
-
     }
 
     public static class ServiceCollectionExtensions
     {
-        public static HttpClient CreateClientWithShopperId(this WebApplicationFactory<Startup> factory, Guid shopperId = default)
+        public static HttpClient CreateClientWithShopperId(this WebApplicationFactory<Startup> factory,
+            Guid shopperId = default)
         {
             shopperId = shopperId == Guid.Empty ? Guid.NewGuid() : shopperId;
             var testClient = factory.CreateClient();
@@ -59,6 +56,7 @@ namespace PaymentGateway.Api.IntegrationTests
             testClient.DefaultRequestHeaders.TryAddWithoutValidation("Authorization", $"Bearer {token}");
             return testClient;
         }
+
         public static IServiceCollection AddDbContext(this IServiceCollection services)
         {
             var descriptor = services.SingleOrDefault
@@ -68,10 +66,8 @@ namespace PaymentGateway.Api.IntegrationTests
             {
                 services.Remove(descriptor);
             }
-            services.AddDbContext<AppDbContext>(options =>
-            {
-                options.UseInMemoryDatabase("InMemoryDbForTesting");
-            });
+
+            services.AddDbContext<AppDbContext>(options => { options.UseInMemoryDatabase(Guid.NewGuid().ToString()); });
             return services;
         }
     }

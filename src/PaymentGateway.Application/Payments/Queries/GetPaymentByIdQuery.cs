@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 using AutoMapper;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
+using PaymentGateway.Application.Cards.Queries;
 using PaymentGateway.Application.Common.Abstractions;
 using PaymentGateway.Domain.Exceptions;
 using PaymentGateway.Models.Payments;
@@ -14,15 +15,15 @@ namespace PaymentGateway.Application.Payments.Queries
     
     public class GetPaymentByIdQueryHandler : IRequestHandler<GetPaymentByIdQuery, PaymentDto>
     {
-        private readonly IMapper _mapper;
         private readonly IAppDbContext _appDbContext;
-        private readonly ICardEncryptionService _cardEncryptionService;
+        private readonly IMapper _mapper;
+        private readonly IMediator _mediator;
 
-        public GetPaymentByIdQueryHandler(IMapper mapper, IAppDbContext appDbContext, ICardEncryptionService cardEncryptionService)
+        public GetPaymentByIdQueryHandler(IMapper mapper, IAppDbContext appDbContext, IMediator mediator)
         {
             _mapper = mapper;
             _appDbContext = appDbContext;
-            _cardEncryptionService = cardEncryptionService;
+            _mediator = mediator;
         }
 
         public async Task<PaymentDto> Handle(GetPaymentByIdQuery request, CancellationToken cancellationToken)
@@ -36,8 +37,8 @@ namespace PaymentGateway.Application.Payments.Queries
                 throw new NotFoundException($"Payment with id {paymentId} was not found");
             }
 
-            payment.CardNumber = _cardEncryptionService.GetMaskedCardNumber(payment.CardNumber);
-            return _mapper.Map<PaymentDto>(payment);
+            var card = await _mediator.Send(new GetCardByIdQuery(payment.CardId), cancellationToken);
+            return _mapper.Map<PaymentDto>(payment) with {Card = card};
         }
     }
 }
