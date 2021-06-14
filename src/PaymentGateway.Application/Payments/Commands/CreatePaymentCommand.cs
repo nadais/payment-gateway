@@ -109,7 +109,7 @@ namespace PaymentGateway.Application.Payments.Commands
                 {
                     Currency = command.Request.Currency,
                     FromCard = targetCard,
-                    Quantity = command.Request.Amount,
+                    Amount = command.Request.Amount,
                     ToAccountId = command.ShopperId
                 });
                 return bankPaymentResponse;
