@@ -21,6 +21,8 @@ namespace PaymentGateway.Domain.Entities
 
         public string Currency { get; set; }
 
+        public string Key { get; set; }
+
         public PaymentStatus Status { get; set; }
     }
 }

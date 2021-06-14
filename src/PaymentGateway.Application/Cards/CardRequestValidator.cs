@@ -19,14 +19,14 @@ namespace PaymentGateway.Application.Cards
                 .GreaterThanOrEqualTo(0)
                 .LessThan(100);
             RuleFor(x => x)
-                .Must(x => !IsCardExpired(x))
+                .Must(IsCardValid)
                 .WithMessage("The provided card is expired");
             RuleFor(x => x.CardNumber)
                 .NotEmpty()
                 .CreditCard();
         }
 
-        private bool IsCardExpired(CardRequest request)
+        private bool IsCardValid(CardRequest request)
         {
             var currentTime = _dateTimeProvider.GetCurrentTime();
             var last2DigitsYear = currentTime.Year % 100;
@@ -37,8 +37,8 @@ namespace PaymentGateway.Application.Cards
                 isYearInFuture = isYearInFuture || request.ExpirationYear <= 10;
             }
 
-            return !isYearInFuture ||
-                   request.ExpirationYear == last2DigitsYear && request.ExpirationMonth < month;
+            return isYearInFuture ||
+                   request.ExpirationYear == last2DigitsYear && request.ExpirationMonth >= month;
         }
     }
 }

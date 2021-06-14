@@ -24,13 +24,15 @@ namespace PaymentGateway.Infrastructure.Migrations
                         .HasColumnType("char(36)");
 
                     b.Property<string>("CardNumber")
-                        .HasColumnType("varchar(255)");
+                        .HasMaxLength(200)
+                        .HasColumnType("varchar(200)");
 
                     b.Property<DateTimeOffset>("CreatedAt")
                         .HasColumnType("datetime(6)");
 
                     b.Property<string>("Cvv")
-                        .HasColumnType("longtext");
+                        .HasMaxLength(200)
+                        .HasColumnType("varchar(200)");
 
                     b.Property<int>("ExpirationMonth")
                         .HasColumnType("int");
@@ -44,12 +46,9 @@ namespace PaymentGateway.Infrastructure.Migrations
                     b.Property<DateTimeOffset?>("ModifiedAt")
                         .HasColumnType("datetime(6)");
 
-                    b.Property<Guid>("ShopperId")
-                        .HasColumnType("char(36)");
-
                     b.HasKey("Id");
 
-                    b.HasIndex("CardNumber", "ShopperId")
+                    b.HasIndex("CardNumber")
                         .IsUnique();
 
                     b.ToTable("Cards");
@@ -61,33 +60,50 @@ namespace PaymentGateway.Infrastructure.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("char(36)");
 
+                    b.Property<decimal>("Amount")
+                        .HasColumnType("decimal(65,30)");
+
                     b.Property<Guid>("CardId")
                         .HasColumnType("char(36)");
-
-                    b.Property<string>("CardNumber")
-                        .HasColumnType("longtext");
 
                     b.Property<DateTimeOffset>("CreatedAt")
                         .HasColumnType("datetime(6)");
 
                     b.Property<string>("Currency")
-                        .HasColumnType("longtext");
+                        .HasMaxLength(50)
+                        .HasColumnType("varchar(50)");
 
                     b.Property<Guid?>("ExternalId")
                         .HasColumnType("char(36)");
 
-                    b.Property<decimal>("Quantity")
-                        .HasColumnType("decimal(65,30)");
+                    b.Property<string>("Key")
+                        .HasMaxLength(150)
+                        .HasColumnType("varchar(150)");
 
                     b.Property<Guid>("ShopperId")
                         .HasColumnType("char(36)");
 
-                    b.Property<int>("Status")
-                        .HasColumnType("int");
+                    b.Property<string>("Status")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("varchar(100)");
 
                     b.HasKey("Id");
 
+                    b.HasIndex("CardId");
+
                     b.ToTable("Payments");
+                });
+
+            modelBuilder.Entity("PaymentGateway.Domain.Entities.Payment", b =>
+                {
+                    b.HasOne("PaymentGateway.Domain.Entities.Card", "Card")
+                        .WithMany()
+                        .HasForeignKey("CardId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("Card");
                 });
 #pragma warning restore 612, 618
         }

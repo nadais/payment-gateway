@@ -15,7 +15,8 @@ namespace PaymentGateway.Application.Payments
                 .ForMember(to => to.Id, how=> how.Ignore())
                 .ForMember(to => to.CreatedAt, how=> how.Ignore())
                 .ForMember(to => to.Status, how => how.Ignore())
-                .ForMember(to => to.ExternalId, how => how.Ignore());
+                .ForMember(to => to.ExternalId, how => how.Ignore())
+                .ForMember(to => to.Key, how => how.Ignore());
         }
     }
 }

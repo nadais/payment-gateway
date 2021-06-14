@@ -26,8 +26,4 @@
       <ProjectReference Include="..\..\src\PaymentGateway.Infrastructure\PaymentGateway.Infrastructure.csproj" />
     </ItemGroup>
 
-    <ItemGroup>
-      <Folder Include="Payments\Commands" />
-    </ItemGroup>
-
 </Project>

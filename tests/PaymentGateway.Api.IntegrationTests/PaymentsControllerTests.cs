@@ -91,14 +91,19 @@ namespace PaymentGateway.Api.IntegrationTests
             };
 
             // Act.
+            payment = payment with {SentAt = DateTimeOffset.UtcNow};
             var response = await client.PostAsync($"{PaymentsUrl}", payment.CreateByteContent());
             var createdPayment = await response.Content.ReadAsJsonAsync<PaymentDto>();
+            Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+
+            payment = payment with {SentAt = DateTimeOffset.UtcNow};
             var secondResponse = await client.PostAsync($"{PaymentsUrl}", payment.CreateByteContent());
-            var secondCreatedPayment = await response.Content.ReadAsJsonAsync<PaymentDto>();
+            var secondCreatedPayment = await secondResponse.Content.ReadAsJsonAsync<PaymentDto>();
 
             // Assert.
             Assert.Equal(HttpStatusCode.OK, response.StatusCode);
             Assert.Equal(HttpStatusCode.OK, secondResponse.StatusCode);
+            Assert.NotEqual(createdPayment.Id, secondCreatedPayment.Id);
             Assert.NotEqual(Guid.Empty, createdPayment.Card.Id);
             Assert.Equal(createdPayment.Card.Id, secondCreatedPayment.Card.Id);
         }

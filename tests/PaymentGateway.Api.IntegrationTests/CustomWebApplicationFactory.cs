@@ -10,6 +10,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using PaymentGateway.Api.Extensions.Authentication;
+using PaymentGateway.Application.Common.Abstractions;
 using PaymentGateway.Infrastructure;
 using PaymentGateway.Infrastructure.Persistence;
 
@@ -67,7 +68,11 @@ namespace PaymentGateway.Api.IntegrationTests
                 services.Remove(descriptor);
             }
 
-            services.AddDbContext<AppDbContext>(options => { options.UseInMemoryDatabase(Guid.NewGuid().ToString()); });
+            services.AddDbContext<AppDbContext>(options =>
+            {
+                options.UseInMemoryDatabase(Guid.NewGuid().ToString());
+            });
+            services.AddScoped<IAppDbContext, AppDbContext>();
             return services;
         }
     }
