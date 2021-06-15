@@ -13,7 +13,6 @@ namespace PaymentGateway.Application
             services.AddMediatR(typeof(DependencyInjection).Assembly);
             services.AddAutoMapper(typeof(DependencyInjection).Assembly);
             services.AddTransient(typeof(IPipelineBehavior<,>), typeof(RequestValidationBehavior<,>));
-            services.AddTransient<ICardEncryptionService, CardEncryptionService>();
             return services;
         }
     }

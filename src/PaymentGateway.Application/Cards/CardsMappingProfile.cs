@@ -12,7 +12,6 @@ namespace PaymentGateway.Application.Cards
             CreateMap<CardRequest, Card>()
                 .ForMember(to => to.Id, how=> how.Ignore())
                 .ForMember(to => to.CreatedAt, how=> how.Ignore())
-                .ForMember(to => to.ModifiedAt, how=> how.Ignore())
                 .ReverseMap()
                 .ForMember(to => to.Cvv, how => how.Ignore());
         }

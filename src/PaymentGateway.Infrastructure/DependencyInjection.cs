@@ -5,6 +5,7 @@ using Microsoft.Extensions.DependencyInjection;
 using PaymentGateway.Application.Common.Abstractions;
 using PaymentGateway.Domain.Bank;
 using PaymentGateway.Infrastructure.Clients;
+using PaymentGateway.Infrastructure.Options;
 using PaymentGateway.Infrastructure.Persistence;
 using PaymentGateway.Infrastructure.Services;
 using Refit;
@@ -21,6 +22,8 @@ namespace PaymentGateway.Infrastructure
         {
             services.AddScoped<IDateTimeProvider, DateTimeProvider>();
             services.AddScoped<IBankService, BankService>();
+            services.AddScoped<IEncryptionService, AesEncryptionService>();
+            services.Configure<EncryptionOptions>(configuration.GetSection("Encryption"));
             AddDbContext(services, configuration);
             services.AddBankService(configuration);
             return services;

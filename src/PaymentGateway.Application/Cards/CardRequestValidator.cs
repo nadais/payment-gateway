@@ -18,6 +18,9 @@ namespace PaymentGateway.Application.Cards
             RuleFor(x => x.ExpirationYear)
                 .GreaterThanOrEqualTo(0)
                 .LessThan(100);
+            RuleFor(x => x.Cvv)
+                .Must(cvv => cvv is >= 100 and < 10000)
+                .WithMessage("Cvv must be a number with between 3 and 4 digits");
             RuleFor(x => x)
                 .Must(IsCardValid)
                 .WithMessage("The provided card is expired");

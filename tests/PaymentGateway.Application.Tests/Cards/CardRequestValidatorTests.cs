@@ -56,11 +56,36 @@ namespace PaymentGateway.Application.Tests.Cards
             {
                 CardNumber = "5425209346554051",
                 ExpirationMonth = 10,
-                ExpirationYear = 04
+                ExpirationYear = 04,
+                Cvv = 1234
             });
         
             // Assert.
             Assert.True(result.IsValid);
+        }
+        
+        [Theory]
+        [InlineData(12)]
+        [InlineData(12345)]
+        public void Handle_CvvWithInvalidValue_ReturnsInvalid(int cvv)
+        {
+            // Arrange.
+        
+            var referenceDate = new DateTime(3021, 10, 10);
+            _dateTimeProvider.GetCurrentTime().Returns(referenceDate);
+            _systemUnderTest = CreateSystemUnderTests();
+
+            // Act.
+            var result = _systemUnderTest.Validate(new CardRequest
+            {
+                Cvv = cvv
+            });
+
+            // Assert.
+            Assert.False(result.IsValid);
+            var cardError =result.Errors.Single(x => x.PropertyName == nameof(CardRequest.Cvv));
+            
+            Assert.Equal("Cvv must be a number with between 3 and 4 digits", cardError.ErrorMessage);
         }
         
         [Fact]

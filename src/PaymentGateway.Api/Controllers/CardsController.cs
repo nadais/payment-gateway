@@ -27,11 +27,5 @@ namespace PaymentGateway.Api.Controllers
         {
             return await _mediator.Send(new GetCardByIdQuery(id), cancellationToken);
         }
-        
-        [HttpGet("number/{cardNumber}")]
-        public async Task<CardDto> GetCardByNumber([FromRoute] string cardNumber, CancellationToken cancellationToken = default)
-        {
-            return await _mediator.Send(new GetCardByNumberQuery(cardNumber), cancellationToken);
-        }
     }
 }
