@@ -3,7 +3,8 @@
     "PaymentGateway.Api": {
       "commandName": "Project",
       "environmentVariables": {
-        "ASPNETCORE_ENVIRONMENT": "Development"
+        "ASPNETCORE_ENVIRONMENT": "Development",
+        "Encryption__Key": "PdSgVkYp3s6v9y$B&E(H+MbQeThWmZq4"
       },
       "applicationUrl": "https://localhost:7001;http://localhost:7000"
     }

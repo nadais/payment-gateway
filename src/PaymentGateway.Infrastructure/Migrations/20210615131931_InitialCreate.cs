@@ -16,15 +16,10 @@ namespace PaymentGateway.Infrastructure.Migrations
                 {
                     Id = table.Column<Guid>(type: "char(36)", nullable: false, collation: "ascii_general_ci"),
                     CreatedAt = table.Column<DateTimeOffset>(type: "datetime(6)", nullable: false),
-                    ModifiedAt = table.Column<DateTimeOffset>(type: "datetime(6)", nullable: true),
-                    Cvv = table.Column<string>(type: "varchar(200)", maxLength: 200, nullable: true)
-                        .Annotation("MySql:CharSet", "utf8mb4"),
                     CardNumber = table.Column<string>(type: "varchar(200)", maxLength: 200, nullable: true)
                         .Annotation("MySql:CharSet", "utf8mb4"),
                     HolderName = table.Column<string>(type: "longtext", nullable: true)
-                        .Annotation("MySql:CharSet", "utf8mb4"),
-                    ExpirationMonth = table.Column<int>(type: "int", nullable: false),
-                    ExpirationYear = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("MySql:CharSet", "utf8mb4")
                 },
                 constraints: table =>
                 {

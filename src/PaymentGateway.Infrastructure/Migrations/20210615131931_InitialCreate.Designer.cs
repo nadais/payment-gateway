@@ -9,7 +9,7 @@ using PaymentGateway.Infrastructure.Persistence;
 namespace PaymentGateway.Infrastructure.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20210614095257_InitialCreate")]
+    [Migration("20210615131931_InitialCreate")]
     partial class InitialCreate
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -32,21 +32,8 @@ namespace PaymentGateway.Infrastructure.Migrations
                     b.Property<DateTimeOffset>("CreatedAt")
                         .HasColumnType("datetime(6)");
 
-                    b.Property<string>("Cvv")
-                        .HasMaxLength(200)
-                        .HasColumnType("varchar(200)");
-
-                    b.Property<int>("ExpirationMonth")
-                        .HasColumnType("int");
-
-                    b.Property<int>("ExpirationYear")
-                        .HasColumnType("int");
-
                     b.Property<string>("HolderName")
                         .HasColumnType("longtext");
-
-                    b.Property<DateTimeOffset?>("ModifiedAt")
-                        .HasColumnType("datetime(6)");
 
                     b.HasKey("Id");
 

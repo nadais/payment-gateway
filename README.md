@@ -39,8 +39,7 @@ Note: Pay attention to use http in your URLs for the docker compose version (mea
 Now you're authenticated! Explore at your will!
 
 ### Bank Service
-The bank service runs on a separate port (localhost:12345) without swagger environment. You can use POSTman
-or any other REST client of your choice to test requests to it
+The bank service runs on a separate port (localhost:12345) without swagger environment. You can use POSTman or any other REST client of your choice to test requests to it
 * Endpoint: POST /transfer
 * Body: `{"fromCard": [Card(same structure as create payment card object)], "currency": "string", "amount":"decimal", "toAccountId": "Guid" }`
 
@@ -70,10 +69,14 @@ This ensures not only less data repetition but also an easier path to a GDPR req
 * Policy-based authorization with JWT (once logged in, shopper id goes in the token claims and is used for all requests)
 * Mock server and API client (for bank service)
 * Health checks
+* Encryption (of card data)
 * Concurrency and double payment checks (in case the user send the same request with the same timestamp twice).
 Checks for both currently in progress or already processed
 
 ## Improvement points
+In a real production app, we would need to add the encryption key as a kubernetes secret or some other kind of secret and get it at runtime. The encryption key
+being on the launchsettings and docker-compose.yml file just serves as an example in order to run the encryption part locally
+
 As we can be talking about a large amount of events, we could consider switching the payment storage from a SQL database to document-store (for example elasticsearch).
 By doing this, we would treat every payment as an event (single write, multiple reads) and could take advantage of all the features of ES
 

@@ -30,21 +30,8 @@ namespace PaymentGateway.Infrastructure.Migrations
                     b.Property<DateTimeOffset>("CreatedAt")
                         .HasColumnType("datetime(6)");
 
-                    b.Property<string>("Cvv")
-                        .HasMaxLength(200)
-                        .HasColumnType("varchar(200)");
-
-                    b.Property<int>("ExpirationMonth")
-                        .HasColumnType("int");
-
-                    b.Property<int>("ExpirationYear")
-                        .HasColumnType("int");
-
                     b.Property<string>("HolderName")
                         .HasColumnType("longtext");
-
-                    b.Property<DateTimeOffset?>("ModifiedAt")
-                        .HasColumnType("datetime(6)");
 
                     b.HasKey("Id");
 
