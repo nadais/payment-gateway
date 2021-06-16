@@ -13,11 +13,13 @@ namespace PaymentGateway.Models.Payments
 
         public decimal Amount { get; init; }
 
-        public CardDto Card { get; set; }
+        public Guid CardId { get; init; }
+
+        public CardDto Card { get; init; }
 
         public DateTimeOffset CreatedAt { get; init; }
 
-        public PaymentStatus Status { get; set; }
+        public PaymentStatus Status { get; init; }
 
     }
 }

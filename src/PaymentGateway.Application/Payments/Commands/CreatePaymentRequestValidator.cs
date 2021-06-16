@@ -11,6 +11,8 @@ namespace PaymentGateway.Application.Payments.Commands
         {
             RuleFor(x => x.Amount)
                 .GreaterThan(0);
+            RuleFor(x => x.Currency)
+                .NotEmpty();
             RuleFor(x => x.Card)
                 .SetValidator(new CardRequestValidator(dateTimeProvider));
         }
